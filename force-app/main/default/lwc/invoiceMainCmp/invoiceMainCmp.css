@@ -1,0 +1,9 @@
+.progress{
+    margin: 1%;
+}
+.main{
+    margin: 1%;
+}
+.slds-notify-container, .slds-notify_container{
+    white-space: pre-line !important;
+}

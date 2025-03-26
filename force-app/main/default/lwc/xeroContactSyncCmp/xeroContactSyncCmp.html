@@ -1,0 +1,64 @@
+<template>
+    <lightning-quick-action-panel header={headerText}>
+        <template if:true={displayMsg}>
+            <div class="slds-is-relative">
+                <template if:true={isLoading}>
+                    <div class="loading-box slds-align_absolute-center">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </template>
+                <br/>
+                <div>
+                    <h6>{displayMsg}</h6>
+                </div>
+            </div>
+        </template>
+        <template if:false={displayMsg}>
+       
+            <div class="action-Panel">
+
+                <div class="container1" style="padding-top: 20px;">
+                    <div class="plans" style="padding-top: 0; padding-bottom: 0;">
+                        <!-- <div class="title">Sync Bulk Xero Invoices to salesforce from xero </div> -->
+                        <label class="plan basic-plan" for="all">
+                            <input type="radio" name="sync" id="all" value="SFToXero" onchange={conSynchandleChange}/>
+                            <div class="plan-content">
+                                <div class="plan-image">
+                                    <img class="img-cls" src={SFToXeroIconImg} style="border-radius: 10px;">
+                                </div>
+                                <div class="plan-details ">
+                                    <span>Sync Contact from Salesforce to Xero</span>
+                                </div>
+                            </div>  
+                        </label>
+                  
+                        <label class="plan complete-plan" for="filters">
+                            <input type="radio" name="sync" id="filters" value="XeroToSF" onchange={conSynchandleChange}/>
+                            <div class="plan-content">
+                                <div class="plan-image">
+                                    <img class="img-cls" src={XeroToSFIconImg} style="border-radius: 10px;"/>
+                                </div>
+                                <div class="plan-details">
+                                    <span>Sync Contact from Xero to Salesforce</span>
+                                </div>
+                            </div>
+                      </label>
+                    </div>
+                </div>
+                <hr/>
+                <div class="container">
+                    <div class="btn-holder">
+                     
+                        <!-- <lightning-button label="Cancel" title="Cancel" onclick={handleCancel} class="slds-m-left_x-small"></lightning-button> -->
+                      <lightning-button variant="brand" label="Sync" title="Sync" onclick={saveModal} class="slds-m-left_x-small"></lightning-button>
+                    </div>
+                </div>
+            </div>
+           
+        </template>
+    </lightning-quick-action-panel>
+</template>

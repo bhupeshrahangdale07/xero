@@ -1,0 +1,189 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={showLoading}>
+        <article class="slds-card currencyConfig">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <lightning-icon icon-name="utility:currency" alternative-text="Event" title="Event">
+                    </lightning-icon>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title slds-m-left_small">
+                            <a href="#" class="slds-card__header-link slds-truncate" title="Accounts">
+                                <span>Currency Configuration</span>
+                            </a>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+
+            <div class="slds-card__body">
+                <section class="slds-card  ">
+
+                    <div class="slds-card__body slds-card__body_inner">
+                        <div class="slds-section-title_divider slds-m-vertical_medium">
+                            Currency Synchronization
+                        </div>
+                        <template if:true={isMultiCurrencyOrg}>
+
+                            <div style=" padding-bottom: 8px; " class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <p><lightning-icon icon-name="utility:info_alt" alternative-text="info" size="small"
+                                            title="info"></lightning-icon>
+                                        &nbsp;&nbsp;<b>Please click on Sync to keep Xero and Salesforce currencies in
+                                            sync.</b>
+                                    </p>
+                                </div>
+                                <div class="slds-col" style="text-align:right">
+                                    <lightning-button  variant="brand" label="Refresh"
+                                        title="Refresh" onclick={handleRefreshCurrency}
+                                        class="slds-m-left_x-small" name="RefCurrencies"
+                                        ></lightning-button>
+                                </div>
+
+                            </div>
+                        </template>
+
+                        <!-- <template if:false={isMultiCurrencyOrg}>
+
+                            <div style=" padding-bottom: 8px;">
+                                <p><lightning-icon icon-name="utility:info_alt" alternative-text="info" size="small"
+                                        title="info"></lightning-icon>
+                                    &nbsp;&nbsp;<b>Please follow below steps to enable multi-currency functionality for
+                                        the org.</b> </p>
+
+
+                            </div>
+                            <div slot="body" style="padding-left: 20px;">
+                                <ol class="slds-list_ordered">
+                                    <li>Open setup from the gear icon at top right corner.</li>
+                                    <li>Search for "Company Information" from the seach bar.</li>
+                                    <li>Edit organization details and enable "Activate Multiple Currencies" option.</li>
+                                    <li>Click on Save. Once after saving refresh Xero setup, Sync button will be enabled
+                                        for the currency synchroization.</li>
+                                </ol>
+                            </div>
+                            <div style=" padding-left: 20px;">
+                                <p style="color: red;"><b>[Note: Once multi-currency is enabled, It won't be disabled
+                                        again.]</b></p>
+                            </div>
+                        </template>
+                        <br /> -->
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                                <template if:true={showCurr}>
+                                    <div>
+                                        <table>
+                                            <thead style="position:sticky; top:0; z-index: 1;">
+                                                <tr>
+                                                    <th>Salesforce currencies</th>
+                                                    <th>Xero Currencies</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                <template if:true={syncedCurr.length}>
+                                                    <template for:each={syncedCurr} for:item="curr">
+                                                        <tr key={curr.salesCurr}>
+                                                            <td>{curr.salesCurr}</td>
+                                                            <td>{curr.xeroCurr}</td>
+                                                            <td>
+                                                                <lightning-button variant="brand" label="Sync"
+                                                                    title="Sync" onclick={handleSync}
+                                                                    class="slds-m-left_x-small" disabled={curr.syncBtn}
+                                                                    value={curr.btnValue}></lightning-button>
+                                                            </td>
+                                                        </tr>
+                                                    </template>
+                                                </template>
+
+                                                <template for:each={notSyncedSales} for:item="curr">
+                                                    <tr key={curr.salesCurr}>
+                                                        <td>{curr.salesCurr}</td>
+                                                        <td>{curr.xeroCurr}</td>
+                                                        <td>
+                                                            <lightning-button variant="brand" label="Sync" title="Sync"
+                                                                onclick={handleSync} class="slds-m-left_x-small"
+                                                                disabled={curr.syncBtn}
+                                                                value={curr.btnValue}></lightning-button>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+
+                                                <template if:true={notSyncedXero.length}>
+                                                    <template for:each={notSyncedXero} for:item="curr">
+                                                        <tr key={curr.salesCurr}>
+                                                            <td>{curr.salesCurr}</td>
+                                                            <td>{curr.xeroCurr}</td>
+                                                            <td>
+                                                                <lightning-button variant="brand" label="Sync"
+                                                                    title="Sync" onclick={handleSync}
+                                                                    class="slds-m-left_x-small" disabled={curr.syncBtn}
+                                                                    value={curr.btnValue}></lightning-button>
+                                                            </td>
+                                                        </tr>
+                                                    </template>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </section>
+            </div>
+            <div>
+                <c-modal-pop-up show-modal={showModal} show-positive={showPositiveButton}
+                    show-negative={showNegativeButton} positive-button-label={positiveButtonLabel}
+                    onpositive={closeModal} onclose={closeModal}>
+                    <div slot="header">
+                        <h2 slot="header" id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create
+                            Currency in Salesforce</h2>
+                    </div>
+                    <div slot="body">
+                        <template if:false={isMultiCurrencyOrg}>
+                            <div style=" padding-bottom: 8px;">
+                                <p><lightning-icon icon-name="utility:info_alt" alternative-text="info" size="small"
+                                        title="info"></lightning-icon>
+                                    &nbsp;&nbsp;<b>Multi-Curreny is disabled in your org. You cannot add new currency. Please follow below steps to enable multi-currency functionality for
+                                        the org.</b>
+                                </p>
+                            </div>
+                            <div slot="body" style="padding-left: 20px;">
+                                <ol class="slds-list_ordered">
+                                    <li>Open setup from the gear icon at top right corner.</li>
+                                    <li>Search for "Company Information" from the seach bar.</li>
+                                    <li>Edit organization details and enable "Activate Multiple Currencies" option.</li>
+                                    <li>Click on Save. Once after saving refresh Xero setup, Sync button will be enabled
+                                        for the currency synchroization.</li>
+                                </ol>
+                            </div>
+                            <div style=" padding-left: 20px;">
+                                <p style="color: red;"><b>[Note: Once multi-currency is enabled, It won't be disabled
+                                        again.]</b></p>
+                            </div>
+                        </template>
+                        <template if:true={isMultiCurrencyOrg}>
+                            <ol class="slds-list_ordered">
+                                <li>Create new currency by clicking on <lightning-button variant="brand"
+                                        icon-name="utility:forward_up" label="Open Currency layout"
+                                        title="Open Currency layout" class="slds-m-left_x-small"
+                                        onclick={OpenCurrencyLayout}></lightning-button></li>
+                                <li>Click on new.</li>
+                                <li>Fill up currency type, currency rate and Decimal places fields.</li>
+                                <li>Make Sure that currency rate should be same as currency exchnage rate at Xero for the
+                                    same currency.</li>
+                                <li>Click on Save.</li>
+                            </ol>
+                        </template>
+                    </div>
+                </c-modal-pop-up>
+            </div>
+        </article>
+    </template>
+</template>

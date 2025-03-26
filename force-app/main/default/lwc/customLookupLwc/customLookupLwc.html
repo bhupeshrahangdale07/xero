@@ -1,0 +1,44 @@
+<template>
+    
+    <lightning-spinner lwc:if={isLoading} alternative-text="Loading"></lightning-spinner>
+    
+    <div class="slds-form-element__control">
+        <div class="slds-combobox_container">
+
+            <!-- Search Input -->
+            <lightning-input
+                disabled={isObjectSelectionRO}
+                required={isRequired}
+                label="Select Object"
+                type="search"
+                value={selectedObjectReference}
+                onchange={handleInputChange} 
+                onblur={handleOnBlur}
+				variant="label-hidden">
+            </lightning-input>
+
+            <!-- Combobox copied from https://www.lightningdesignsystem.com/components/combobox/ -->
+            <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+
+                <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                        <template for:each={autoCompleteOptions} for:item="option">
+                            <li key={option.name} role="presentation" class="slds-listbox__item"
+                                onclick={handleOptionClick} data-value={option.reference}
+                                data-name={option.name}>
+                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                                    <span class="slds-media__figure slds-listbox__option-icon"></span>
+                                    <span class="slds-media__body">
+                                        <span class="slds-truncate" title="Option ABCDEFGHIJKLMNOPQRSTUVWXYZ">{option.reference}</span>
+                                    </span>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</template>

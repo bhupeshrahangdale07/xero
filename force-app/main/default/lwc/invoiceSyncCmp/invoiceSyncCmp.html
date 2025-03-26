@@ -1,0 +1,98 @@
+<template>
+    <!-- <div>
+        <c-modal-pop-up 
+            show-modal={showModal} 
+            show-positive={showPositiveButton}
+            positive-button-label={positiveButtonLabel}
+            negative-button-label={negativeButtonLabel}
+            show-negative={showNegativeButton}
+            onpositive={saveModal}
+            onnegative={closeModal}
+            onclose={closeModal}>
+            <div slot="header">
+                <h2 slot="header" id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Invoice Sync Option</h2>
+            </div>
+            <div slot="body">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col" style="text-align: end;font-weight: bold;">
+                      <span>Invoice Sync Options: </span>
+                    </div>
+                    <div class="slds-col">
+                        <lightning-radio-group 
+                              name="Invoice Sync"
+                              label="Invoice Sync"
+                              options={invSyncOptions}
+                              value={invSync}
+                              variant="label-hidden"
+                              type="radio" onchange={invSynchandleChange}></lightning-radio-group>
+                    </div>
+                </div>
+            </div>
+        </c-modal-pop-up>
+    </div> -->
+
+    <lightning-quick-action-panel header={headerText} >
+        <template if:true={displayMsg}>
+
+                <div class="slds-is-relative">
+                    <template if:true={isLoading}>
+                        <div class="loading-box slds-align_absolute-center">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </template>
+                    <br/>
+                    <div>
+                        <h6>{displayMsg}</h6>
+                    </div>
+                </div>
+            <!-- </lightning-quick-action-panel> -->
+        </template>
+        <template if:false={displayMsg}>
+       
+            <div class="action-Panel">
+
+                <div class="container1" style="padding-top: 20px;">
+                    <div class="plans" style="padding-top: 0; padding-bottom: 0;">
+                        <!-- <div class="title">Sync Bulk Xero Invoices to salesforce from xero </div> -->
+                        <label class="plan basic-plan" for="all">
+                            <input type="radio" name="sync" id="all" value="SFToXero" onchange={invSynchandleChange}/>
+                            <div class="plan-content">
+                                <div class="plan-image">
+                                    <img class="img-cls" alt="Salesforce to Xero" src={XeroToSFIconImg}>
+                                </div>
+                                <div class="plan-details ">
+                                    <span>Sync Invoice from Salesforce to Xero</span>
+                                    <!-- <p>Sync Invoice from Salesforce to Xero</p> -->
+                                </div>
+                            </div>  
+                        </label>
+                  
+                        <label class="plan complete-plan" for="filters">
+                            <input type="radio" name="sync" id="filters" value="XeroToSF" onchange={invSynchandleChange}/>
+                            <div class="plan-content">
+                                <div class="plan-image">
+                                    <img class="img-cls" alt="Xero to Salesforce" src={SFToXeroIconImg}>
+                                </div>
+                                <div class="plan-details">
+                                    <span>Sync Invoice from Xero to Salesforce</span>
+                                    <!-- <p>Sync Invoice from Xero to Salesforce</p> -->
+                                </div>
+                            </div>
+                      </label>
+                    </div>
+                </div>
+                <hr/>
+                <div class="container">
+                    <div class="btn-holder">
+                      <lightning-button variant="brand" label="Sync" title="Sync" onclick={saveModal} class="slds-m-left_x-small"></lightning-button>
+                    </div>
+                </div>
+            </div>
+           
+        </template>
+    </lightning-quick-action-panel>
+</template>

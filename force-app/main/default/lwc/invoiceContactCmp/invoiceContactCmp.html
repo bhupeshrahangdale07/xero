@@ -1,0 +1,26 @@
+<template>
+    <div class="slds-section slds-is-open">
+        <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small" title="Section Title">{sectionValue}</span>
+        </h3>
+        <br/>
+        <div class="radioclass">
+            <input type="radio" data-id="new" name="radioGroup" value="new" onchange={onhandleChange}>
+            <label for="new"> Create a new Xero Contact</label><br/>
+            <input type="radio" data-id="existingContact" name="radioGroup" value="existingContact" onchange={onhandleChange}>
+            <label for="existingContact"> Use the below existing Xero Contact</label><br/>
+            <template if:true={xeroContact}>
+                <div class="slds-p-around_medium lgc-bg">
+                    <lightning-tile label={xeroContact.Company_Name__c} href={xeroContact.URL} type="media">
+                        <lightning-avatar slot="media" size="small" src="" fallback-icon-name="standard:person_account" alternative-text="Bruce Wayne"></lightning-avatar>
+                        <p>Contact Name: {xeroContact.firstName} {xeroContact.lastName}</p>
+                        <p>Contact Email: {xeroContact.emailAddress}</p>
+                    </lightning-tile>
+                </div>
+            </template>
+            <template if:true={newContact}>
+                <c-invoice-xero-con-creation-cmp xero-contact={xeroContact} previous-acc-details={accdetails} previous-con-details={condetails} previous-con-person-details={previousConPersonDetails} account-id={accountId} account-name={accountName} onsuccess={handleSuccess} onaccountdetails={handleaccountdetails} oncontactdetails={handlecontactdetails} oncontactpersonsdetails={handleconpersondetails} ondisablebutton={disableButtons} onbackevent={backEvent}></c-invoice-xero-con-creation-cmp>
+            </template>
+        </div>
+    </div>
+</template>

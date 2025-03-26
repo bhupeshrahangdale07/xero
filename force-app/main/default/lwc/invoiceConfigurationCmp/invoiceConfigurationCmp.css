@@ -1,0 +1,67 @@
+.invoiceConfig .slds-card__header.slds-grid {
+    border-bottom: 3px solid #00A1E0;
+    box-shadow: 3px 0px 3px #00a1e0;
+    padding: 18px;
+}
+.slds-section-title_divider.slds-m-top_medium.slds-m-bottom_medium{
+    font-size: .75rem;
+    line-height: 1.25;
+    color: black;
+    text-transform: uppercase;
+    letter-spacing: .0625rem;
+    padding: 0.5rem 1rem;
+    background: var(--slds-g-color-neutral-base-95, rgb(243, 243, 243));
+}
+.spinner{
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+
+td{
+    /* height: 50px; */
+    padding: 7px;
+}
+
+th{
+    height: 50px;
+    padding: 7px;
+}
+
+.container {
+  display: inline-block;
+  position: relative;
+}
+
+.dialog-container {
+  position: absolute;
+  top: -510%;
+  left: 220%;
+  transform: translateX(-20%);
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 280px;
+  background-color: #5c5b5b;
+  box-shadow: 0px 4px 6px 0px rgba(5, 5, 5, 0.25);
+}
+
+.arrow {
+  position: absolute;
+  top: 100%;
+  left: 9%;
+  transform: translateX(-18%);
+  border: 10px solid transparent;
+  border-top-color: #535252;
+}
+
+.dialog-content {
+  padding: 0.5rem;
+}
+
+.help-text {
+  display: inline-block;
+  color: #ffffff;
+}

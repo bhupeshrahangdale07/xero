@@ -1,0 +1,92 @@
+.invoiceConfig .slds-card__header.slds-grid {
+    border-bottom: 3px solid #00A1E0;
+    box-shadow: 3px 0px 3px #00a1e0;
+    padding: 18px;
+}
+
+.slds-section-title_divider.slds-m-top_medium.slds-m-bottom_medium{
+    font-size: .75rem;
+    line-height: 1.25;
+    color: black;
+    text-transform: uppercase;
+    letter-spacing: .0625rem;
+    padding: 0.5rem 1rem;
+    background: var(--slds-g-color-neutral-base-95, rgb(243, 243, 243));
+}
+
+.toggleLabel{
+    font-size: larger;
+}
+.toggleMsg{
+    font-size: small;
+}
+
+.Note{
+    background: blanchedalmond;
+    border-radius: 5px;
+}
+
+@keyframes blink {
+    /**
+     * At the start of the animation the dot
+     * has an opacity of .2
+     */
+    0% {
+      opacity: .2;
+    }
+    /**
+     * At 20% the dot is fully visible and
+     * then fades out slowly
+     */
+    20% {
+      opacity: 1;
+    }
+    /**
+     * Until it reaches an opacity of .2 and
+     * the animation can start again
+     */
+    100% {
+      opacity: .2;
+    }
+}
+
+.saving span {
+    /**
+     * Use the blink animation, which is defined above
+     */
+    animation-name: blink;
+    /**
+     * The animation should take 1.4 seconds
+     */
+    animation-duration: 1.4s;
+    /**
+     * It will repeat itself forever
+     */
+    animation-iteration-count: infinite;
+    /**
+     * This makes sure that the starting style (opacity: .2)
+     * of the animation is applied before the animation starts.
+     * Otherwise we would see a short flash or would have
+     * to set the default styling of the dots to the same
+     * as the animation. Same applies for the ending styles.
+     */
+    animation-fill-mode: both;
+}
+
+.saving span:nth-child(2) {
+    /**
+     * Starts the animation of the third dot
+     * with a delay of .2s, otherwise all dots
+     * would animate at the same time
+     */
+    animation-delay: .2s;
+}
+
+.saving span:nth-child(3) {
+    /**
+     * Starts the animation of the third dot
+     * with a delay of .4s, otherwise all dots
+     * would animate at the same time
+     */
+    animation-delay: .4s;
+}

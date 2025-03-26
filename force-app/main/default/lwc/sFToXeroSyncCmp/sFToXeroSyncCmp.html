@@ -1,0 +1,19 @@
+<template>
+    <lightning-quick-action-panel header="Sync Invoice with Xero">
+        <div class="slds-is-relative">
+            <template if:true={isLoading}>
+                <div class="loading-box slds-align_absolute-center">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </template>
+            <br/>
+            <div>
+                <h6>{displayMsg}</h6>
+            </div>
+        </div>
+    </lightning-quick-action-panel>
+</template>

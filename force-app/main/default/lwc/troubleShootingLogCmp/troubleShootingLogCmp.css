@@ -1,0 +1,27 @@
+.Note{
+    background: blanchedalmond;
+    border-radius: 5px;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  padding: 10px;
+  font-size: medium;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.spinner{
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+.slds-spinner_container{
+    position: fixed !important;
+}

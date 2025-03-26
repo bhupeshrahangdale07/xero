@@ -1,0 +1,16 @@
+.Note{
+    background: blanchedalmond;
+    border-radius: 5px;
+}
+.action{
+    color: red;
+}
+.exampleHolder{
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+.slds-modal__content{
+    max-height: 500px;
+}

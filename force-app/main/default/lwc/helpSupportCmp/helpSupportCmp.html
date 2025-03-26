@@ -1,0 +1,69 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={showLoading}>
+        <article class="slds-card invoiceConfig">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <lightning-icon icon-name="utility:help" alternative-text="Event" title="Event"></lightning-icon>
+                    <div class="slds-media__body">
+                    <h2 class="slds-card__header-title slds-m-left_small">
+                        <a href="#" class="slds-card__header-link slds-truncate" title="Accounts">
+                        <span>Help and Support</span>
+                        </a>
+                    </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">
+                    <lightning-icon icon-name="utility:help" alternative-text="Help" title="Help" size="small"></lightning-icon>
+                    &nbsp;&nbsp;Help
+                </div>
+                <div>
+                    Please refer <a href={documentLink} target="_blank">Xero User Guide</a> for help regarding any functionality
+                </div>
+                <br/>
+                <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">
+                    <lightning-icon icon-name="utility:workforce_engagement" alternative-text="Support" title="Support" size="small"></lightning-icon>
+                    &nbsp;&nbsp;Contact Support
+                </div>
+                <div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col" style="width: 50%;">
+                            <lightning-input type="text" label="First Name" value={supportData.firstName} name="FirstName" placeholder="Enter First Name" onchange={handleChange} required readonly></lightning-input>
+                            <br/>
+                            <lightning-input type="email" label="Email" value={supportData.email} name="email" placeholder="Enter Email" onchange={handleChange} required readonly></lightning-input>
+                            <br/>
+                            <lightning-file-upload
+                                label="Upload attachments"
+                                name="fileUploader"
+                                onuploadfinished={handleUploadFinished}
+                                multiple
+                            ></lightning-file-upload>
+                            <div class={fontColour}>{fileMsg}</div>
+                        </div>
+                        <div class="slds-col" style="width: 50%;">
+                            <lightning-input type="text" label="Last Name" value={supportData.lastName} name="LastName" placeholder="Enter Last Name" onchange={handleChange} required readonly></lightning-input>
+                            <br/>
+                            <lightning-combobox
+                                name="enquiryType"
+                                label="What type of concern?"
+                                value={supportData.enquiryValue}
+                                placeholder="-- Please select the type of concern --"
+                                options={enquiryOptions}
+                                onchange={handleChange} ></lightning-combobox>
+                        </div>
+                    </div>
+                    <br/>
+                    <lightning-textarea name="Description" label="Description" placeholder="Enter Description here..." maxlength="300" value={supportData.description} onchange={handleChange} required message-when-too-long="A maximum of 300 characters are allowed in a description."></lightning-textarea>
+                    <br/>
+                    <div class="slds-align_absolute-center">
+                        <lightning-button variant="brand" label="Submit" title="Submit" onclick={handleSubmit}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </template>
+</template>

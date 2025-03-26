@@ -1,0 +1,138 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={showLoading}>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        Details from Salesforce Contact
+                    </th>
+                    <th>
+                        New Xero Contact
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="sectionbgcolour">
+                    <td>Contact Details:</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Salesforce Contact</td>
+                    <td>
+                        <lightning-select
+                        name="contacts1"
+                        label="contacts"
+                        value={conoptionsValue}
+                        options={conOptions1}
+                        variant="label-hidden"
+                        onchange={handleChange}></lightning-select>
+                    </td>
+                    <td></td>
+                </tr>
+                <template if:true={conValue}>
+                    <tr>
+                        <td>First Name <span style="color: red;">*</span></td>
+                        <td><lightning-input type="text" variant="label-hidden" data-id={conValue.conId} label="First Name" value={conValue.conFirstName} disabled></lightning-input></td>
+                        <td><lightning-input type="text" name="conFirstName" variant="label-hidden" data-id={newContact.conId} label="First Name" value={newContact.conFirstName} onchange={updateContactValues} required></lightning-input></td>
+                    </tr>
+                    <tr>
+                        <td>Last Name <span style="color: red;">*</span></td>
+                        <td><lightning-input type="text" variant="label-hidden" data-id={conValue.conId} label="Last Name" value={conValue.conLastName} disabled></lightning-input></td>
+                        <td><lightning-input type="text" name="conLastName" variant="label-hidden" data-id={newContact.conId} label="Last Name" value={newContact.conLastName} onchange={updateContactValues} required></lightning-input></td>
+                    </tr>
+                    <tr>
+                        <td>Email <span style="color: red;">*</span></td>
+                        <td><lightning-input type="email" variant="label-hidden" data-id={conValue.conId} label="Email" value={conValue.conEmail} disabled></lightning-input></td>
+                        <td><lightning-input type="email" class="contactEmail" name="conEmail" variant="label-hidden" data-id={newContact.conId} label="Email" value={newContact.conEmail}  onchange={updateContactValues} required></lightning-input></td>
+                    </tr>
+                    <template if:true={xeroContactPersons}>
+                        <template for:each={xeroContactPersons} for:item="xc">
+                            <tr key={xc.conId}>
+                                <td><lightning-button data-id={xc.conId} variant="destructive" label="Remove" title="Remove Contact" onclick={removeClick} class="slds-m-left_x-small"></lightning-button></td>
+                                <td><lightning-select
+                                    name="contacts2"
+                                    label="contacts"
+                                    value={xc.conoptionsValue}
+                                    data-id={xc.conId}
+                                    options={xc.conOptions}
+                                    variant="label-hidden"
+                                    onchange={handleChange}></lightning-select></td>
+                                <td></td>
+                            </tr>
+                            <template if:true={xc.showfields}>
+                                <tr key={xc.conId}>
+                                    <td></td>
+                                    <td><lightning-input type="text" name="conFirstName" data-id={xc.conId} label="First Name" value={xc.conFirstName} onchange={updateContactPersonValues}></lightning-input></lightning-input></td>
+                                    <td><lightning-input type="text" name="conLastName" data-id={xc.conId} label="Last Name" value={xc.conLastName} onchange={updateContactPersonValues}></lightning-input></lightning-input></td>
+                                </tr>
+                                <tr key={xc.conId} class="bottonRow">
+                                    <td></td>
+                                    <td><lightning-input type="text" name="conEmail" data-id={xc.conId} label="Email" value={xc.conEmail} onchange={updateContactPersonValues}></lightning-input></lightning-input></td>
+                                    <td><lightning-input type="checkbox"  class="personEmail" name="includeinEmail" data-id={xc.conId} label="Include this person in emails sent to the contact" checked={xc.includeinEmail} onchange={updateContactPersonValues}></lightning-input></lightning-input></td>
+                                </tr>
+                            </template>
+                        </template>
+                    </template>
+                        <tr>
+                            <td></td>
+                            <td><lightning-button variant="base" label="+ Add More Contact Persons" title="Add More Contacts" onclick={addcontact} disabled={disableAddButton} class="slds-m-left_x-small"></lightning-button></td>
+                            <td></td>
+                        </tr>
+                </template>
+                <template if:true={accountDetails}>
+                    <tr class="sectionbgcolour">
+                        <td>Account Details:</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Account Number</td>
+                        <td><lightning-input type="text" variant="label-hidden" name="Account Number" label="Account Number" value={accountDetails.accNumber} disabled></lightning-input></td>
+                        <td><lightning-input type="text" variant="label-hidden" name="Account Number" label="Account Number" value={editaccountDetails.accNumber} onchange={updateAccountValues}></lightning-input></td>
+                    </tr>
+                    <tr>
+                        <td>Account Name <span style="color: red;">*</span></td>
+                        <td><lightning-input type="text" variant="label-hidden" name="Account Name" label="Account Name" value={accountDetails.accName} disabled></lightning-input></td>
+                        <td><lightning-input type="text" variant="label-hidden" name="Account Name" label="Account Name" value={editaccountDetails.accName} onchange={updateAccountValues} required></lightning-input></td>
+                    </tr>
+                    <tr>
+                        <td>Street Address</td>
+                        <td><lightning-input type="text" variant="label-hidden" name="Street Address" label="Street Address" value={accountDetails.accStreet} disabled></lightning-input></td>
+                        <td><lightning-input type="text" variant="label-hidden" name="Street Address" label="Street Address" value={editaccountDetails.accStreet} onchange={updateAccountValues}></lightning-input></td>
+                    </tr>
+                    <tr>
+                        <td>City</td>
+                        <td><lightning-input type="text" variant="label-hidden" name="City" label="City" value={accountDetails.accCity} disabled></lightning-input></td>
+                        <td><lightning-input type="text" variant="label-hidden" name="City" label="City" value={editaccountDetails.accCity} onchange={updateAccountValues}></lightning-input></td>
+                    </tr>
+                    <tr>
+                        <td>State</td>
+                        <td><lightning-input type="text" variant="label-hidden" name="State" label="State" value={accountDetails.accState} disabled></lightning-input></td>
+                        <td><lightning-input type="text" variant="label-hidden" name="State" label="State" value={editaccountDetails.accState} onchange={updateAccountValues}></lightning-input></td>
+                    </tr>
+                    <tr>
+                        <td>Postal/Zip Code</td>
+                        <td><lightning-input type="text" variant="label-hidden" name="postal code" label="postal code" value={accountDetails.accPostalCode} disabled></lightning-input></td>
+                        <td><lightning-input type="text" variant="label-hidden" name="postal code" label="postal code" value={editaccountDetails.accPostalCode} onchange={updateAccountValues}></lightning-input></td>
+                    </tr>
+                    <tr>
+                        <td>Country</td>
+                        <td><lightning-input type="text" variant="label-hidden" name="Country" label="Country" value={accountDetails.accCountry} disabled></lightning-input></td>
+                        <td><lightning-input type="text" variant="label-hidden" name="Country" label="Country" value={editaccountDetails.accCountry} onchange={updateAccountValues}></lightning-input></td>
+                    </tr>
+                    <tr>
+                        <td>Account Phone</td>
+                        <td><lightning-input type="text" variant="label-hidden" name="Account Phone" label="Account Phone" value={accountDetails.accPhone} disabled></lightning-input></td>
+                        <td><lightning-input type="text" variant="label-hidden" name="Account Phone" label="Country" value={editaccountDetails.accPhone} onchange={updateAccountValues}></lightning-input></td>
+                    </tr>
+                   
+                </template>
+            </tbody>
+        </table>
+    </template>
+</template>

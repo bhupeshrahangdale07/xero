@@ -1,0 +1,44 @@
+<template>
+    <lightning-quick-action-panel header="Delete / Void Xero Invoice">
+        <div class="slds-is-relative">
+            <template if:true={isLoading}>
+                <lightning-spinner variant="brand" size="medium"> 
+                </lightning-spinner>    
+            </template>
+            <template if:false={isLoading}>
+                <template if:true={deleteOption}>
+                    <div class="slds-p-around_small Note">
+                        <h3><b>Note:</b></h3>
+                        <ul class="slds-list_dotted">
+                            <li>DRAFT or SUBMITTED Invoice will be <b>Deleted</b>.</li>
+                            <li>AUTHORISED invoice can't be deleted , it will be <b>Voided</b>.</li>
+                        </ul>
+                    </div>
+                    <br />
+                    <div class="slds-align_absolute-center" style="font-size: large;">
+                        Are you sure you want to <b class="action">&nbsp;{actionName}&nbsp;</b><b>{Name}&nbsp;</b></b>?
+                    </div>
+                    <br/>
+                    <div slot="footer" class="slds-align_absolute-center">
+                        <lightning-button variant="neutral" name="Cancel" label="Cancel" onclick={closeAction}>
+                        </lightning-button>
+                        <lightning-button variant="destructive" name="Yes" label="Yes" onclick={saveAction}
+                            class="slds-m-left_x-small"></lightning-button>
+                    </div>
+                </template>
+                <template if:false={deleteOption}>
+                    <template if:false={invPaid}>
+                        <div class="slds-align_absolute-center" style="font-size: large;">
+                            Invoice {Name} is already <b class="action">&nbsp;{invStatus}&nbsp;</b>
+                        </div>
+                    </template>
+                    <template if:true={invPaid}>
+                        <div class="slds-align_absolute-center" style="font-size: large;">
+                            If invoice has a payment or credit notes allocated than it cannot be <b class="action">&nbsp;deleted or voided.</b>
+                        </div>
+                    </template>
+                </template>
+            </template>
+        </div>
+    </lightning-quick-action-panel>
+</template>

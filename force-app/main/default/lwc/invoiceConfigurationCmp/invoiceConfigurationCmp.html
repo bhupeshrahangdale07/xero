@@ -1,0 +1,330 @@
+<template>
+	<template if:true={showLoading}>
+		<lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+	</template>
+	<template if:false={showLoading}>
+		<article class="slds-card invoiceConfig">
+			<!-- <div class="slds-card__header slds-grid">
+				<header class="slds-media slds-media_center slds-has-flexi-truncate">
+					<lightning-icon icon-name="utility:page" alternative-text="Event" title="Event"></lightning-icon>
+					<div class="slds-media__body">
+						<h2 class="slds-card__header-title slds-m-left_small">
+							<a href="#" class="slds-card__header-link slds-truncate" title="Accounts">
+								<span>Invoice Configuration</span>
+							</a>
+						</h2>
+					</div>
+				</header>
+			</div> -->
+			<div class="slds-card__body slds-card__body_inner">
+				<div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">Allow Invoices to be
+					created as
+					Draft/Approved</div>
+				<div>
+					<p><lightning-icon icon-name="utility:info_alt" alternative-text="info" size="small"
+							title="info"></lightning-icon>
+						&nbsp;&nbsp;Please select at least one option. If all options are inactive, then by default
+						“Create Draft Invoice in Xero” will remain active.
+					</p>
+				</div>
+				<br />
+				<div class="slds-form-element slds-m-bottom_small">
+					<label class="slds-checkbox_toggle slds-grid">
+						<input type="checkbox" checked={invoiceConfig.draft} name="Draft" onchange={handleChange} />
+						<span class="slds-checkbox_faux_container" aria-live="assertive">
+							<span class="slds-checkbox_faux"></span>
+						</span>
+						<span class="slds-form-element__label slds-m-bottom_none slds-m-left_small">Create Draft Invoice
+							in
+							Xero</span>
+					</label>
+				</div>
+				<div class="slds-form-element slds-m-bottom_small">
+					<label class="slds-checkbox_toggle slds-grid">
+						<input type="checkbox" checked={invoiceConfig.submit} onchange={handleChange} name="submit" />
+						<span class="slds-checkbox_faux_container" aria-live="assertive">
+							<span class="slds-checkbox_faux"></span>
+						</span>
+						<span class="slds-form-element__label slds-m-bottom_none slds-m-left_small">Create Invoice and
+							Submit for
+							Approval in Xero</span>
+					</label>
+				</div>
+				<div class="slds-form-element slds-m-bottom_small">
+					<label class="slds-checkbox_toggle slds-grid">
+						<input type="checkbox" checked={invoiceConfig.approved} onchange={handleChange}
+							name="approved" />
+						<span class="slds-checkbox_faux_container" aria-live="assertive">
+							<span class="slds-checkbox_faux"></span>
+						</span>
+						<span class="slds-form-element__label slds-m-bottom_none slds-m-left_small">Create Approved
+							Invoice in
+							Xero</span>
+					</label>
+				</div>
+				<div class="slds-form-element slds-m-bottom_small">
+					<label class="slds-checkbox_toggle slds-grid">
+						<input type="checkbox" checked={invoiceConfig.approvedEmail} onchange={handleChange}
+							name="approveandEmail" />
+						<span class="slds-checkbox_faux_container" aria-live="assertive">
+							<span class="slds-checkbox_faux"></span>
+						</span>
+						<span class="slds-form-element__label slds-m-bottom_none slds-m-left_small">Create Approved
+							Invoice &amp;
+							Email via Xero</span>
+					</label>
+				</div>
+
+				<!-- Invoice Default Settings starts here -->
+				<div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">Default Invoice Setting
+				</div>
+				<table>
+					<thead>
+						<tr>
+							<th style="width: 35%;">Defaults</th>
+							<th style="width: 35%;">Values</th>
+							<th style="width: 30%;">Refresh Values From Xero</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Accounting Code</td>
+							<td>
+								<lightning-combobox name="AccCodes" label="Accounting Code"
+									value={invoiceConfig.accCode} variant="label-hidden"
+									placeholder="Select Default Accounting Code" options={accOptions}
+									onchange={handleChange}>
+								</lightning-combobox>
+							</td>
+							<td>
+								<lightning-button-icon name="AccCodes" icon-name="utility:refresh" variant="brand"
+									alternative-text="Refresh Account Code"
+									onclick={handleRefresh}></lightning-button-icon>
+							</td>
+						</tr>
+						<tr>
+							<td>Invoice Template</td>
+							<td>
+								<lightning-combobox name="Invoice Template" label="Invoice Template"
+									value={invoiceConfig.invTemplate} variant="label-hidden"
+									placeholder="Select Invoice Template" options={templateOptions}
+									onchange={handleChange}>
+								</lightning-combobox>
+							</td>
+							<td>
+								<lightning-button-icon name="Invoice Template" icon-name="utility:refresh"
+									variant="brand" alternative-text="Refresh Invoice Template"
+									onclick={handleRefresh}></lightning-button-icon>
+							</td>
+						</tr>
+						<tr>
+							<td>Invoice Tax Type</td>
+							<td>
+								<lightning-combobox name="taxType" label="taxType" value={invoiceConfig.invtaxType}
+									variant="label-hidden" placeholder="Select Default tax Type"
+									options={amountTaxOptions} onchange={handleChange}>
+								</lightning-combobox>
+							</td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+				<br />
+				<!-- Tracking catogries table starts here -->
+				<div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">Tracking Categories
+					Default Settings</div>
+				<template if:true={trackmapData.length}>
+					<table>
+						<thead>
+							<tr>
+								<th style="width: 35%;">Tracking Categories Default Settings</th>
+								<th style="width: 35%;">Values</th>
+								<td style="width: 30%;text-align: end;">
+									<lightning-button variant="brand" name="tracking"
+										label="Refresh Tracking Values From Xero"
+										title="Refresh Tracking Values From Xero"
+										onclick={handleRefresh}></lightning-button>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<template for:each={trackmapData} for:item="map">
+								<tr key={map.key}>
+									<td>{map.key}</td>
+									<td>
+										<lightning-combobox name={map.key} label="trackingCategory"
+											data-id={map.value.id} variant="label-hidden" options={map.value.options}
+											placeholder="Select Tracking Category Option" value={map.value.defaultVal}
+											onchange={handleTracking}>
+										</lightning-combobox>
+									</td>
+									<td></td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</template>
+				<template if:false={trackmapData.length}>
+					<div>
+						Get all Tracking Categories and it's option from Xero&nbsp;&nbsp;
+						<lightning-button variant="brand" name="tracking" label="Refresh Tracking Values From Xero"
+							title="Refresh Tracking Values From Xero" onclick={handleRefresh}></lightning-button>
+					</div>
+				</template>
+
+				<!-- Invoice Default Settings starts here -->
+				<div style="position: initial;">
+					<div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">
+						<span>
+							Invoice Default Field Mapping From Opportunity
+						</span>
+					</div>
+				</div>
+
+				<div>
+					<lightning-layout multiple-rows="true">
+						<lightning-layout-item padding="horizontal-small" alignment-bump="left">
+							<lightning-button variant="brand" label="Refresh Opportunity Fields"
+								name="Refresh_Opportunity_Fields" title="Refresh Opportunity Fields"
+								onclick={refreshInvoiceFields} class="slds-m-left_x-small">
+							</lightning-button>
+						</lightning-layout-item>
+					</lightning-layout>
+
+					<table style="width: 90%;">
+						<thead>
+							<tr>
+								<th style="padding: 1%;width: 40%;">
+									Invoice Field
+								</th>
+								<th colspan="4" style="padding: 1%;width: 60%;">
+									Opportunity Field
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td style="padding: 1%;">
+									Invoice Reference &nbsp;
+									<div class="container">
+										<lightning-icon icon-name="utility:info" alternative-text="Help" size="xx-small"
+											onmouseover={displayHelpText} onmouseout={hideHelpText}></lightning-icon>
+										<template if:true={showHelpTextFlag}>
+											<div class="dialog-container">
+												<div class="arrow"></div>
+												<div class="dialog-content">
+													<span class="help-text">Field selected here will map to the Invoice
+														Reference field on Xero to make it easier to cross reference
+														invoices with opportunities in Salesforce.</span>
+												</div>
+											</div>
+										</template>
+									</div>
+								</td>
+								<td colspan="4" style="padding: 1%;">
+									<lightning-combobox name="invoiceReference" label="Invoice Reference"
+										value={invoiceConfig.invoiceReference}
+										placeholder="Select Default Invoice Reference" variant="label-hidden"
+										options={fields.textFields} onchange={handleInvoiceChange}>
+									</lightning-combobox>
+								</td>
+							</tr>
+							<tr>
+								<td style="padding: 1%;">
+									Invoice Due Date
+								</td>
+								<td style="padding: 1%; min-width: 80px;">
+									<lightning-input name="invoiceDueDate_Days" variant="label-hidden"
+										placeholder="Days" type="number" value={invoiceDateOptions.invoiceDueDate.Days}
+										step="0" min="0" label="Days" onchange={handleInvoiceChange}>
+									</lightning-input>
+								</td>
+								<td style="padding: 1%; min-width: 60px;">
+									<span>
+										Days
+									</span>
+								</td>
+								<td style="padding: 1%;">
+									<lightning-combobox name="invoiceDueDate_After_Or_Before" label="Invoice Due Date"
+										value={invoiceDateOptions.invoiceDueDate.SelectedBeforeAfterFieldValue}
+										variant="label-hidden" options={invoiceDateOptions.invoiceDueDate.options}
+										onchange={handleInvoiceChange}>
+									</lightning-combobox>
+								</td>
+								<td style="padding: 1%;">
+									<lightning-combobox name="invoiceDueDate" label="Invoice Due Date"
+										value={invoiceDateOptions.invoiceDueDate.value}
+										placeholder="Select Default Invoice Due Date" variant="label-hidden" step="0"
+										min="0" options={fields.dateFields} onchange={handleInvoiceChange}>
+									</lightning-combobox>
+								</td>
+							</tr>
+							<tr>
+								<td style="padding: 1%;">
+									Invoice Date
+								</td>
+								<td style="padding: 1%; min-width: 80px;">
+									<lightning-input name="invoiceDate_Days" variant="label-hidden" placeholder="Days"
+										type="number" value={invoiceDateOptions.invoiceDate.Days} label="Days"
+										onchange={handleInvoiceChange}>
+									</lightning-input>
+								</td>
+								<td style="padding: 1%; min-width: 60px;">
+									<span>
+										Days
+									</span>
+								</td>
+								<td style="padding: 1%; width:12%;">
+									<lightning-combobox name="invoiceDate_After_Or_Before" label="Invoice Date"
+										value={invoiceDateOptions.invoiceDate.SelectedBeforeAfterFieldValue}
+										variant="label-hidden" options={invoiceDateOptions.invoiceDate.options}
+										onchange={handleInvoiceChange}>
+									</lightning-combobox>
+								</td>
+								<td style="padding: 1%; width:40%;">
+									<lightning-combobox name="invoiceDate" label="Invoice Date"
+										value={invoiceDateOptions.invoiceDate.value}
+										placeholder="Select Default Invoice Date" variant="label-hidden"
+										options={fields.dateFields} onchange={handleInvoiceChange}>
+									</lightning-combobox>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<br />
+					<table style="width: 90%;">
+						<thead>
+							<tr>
+								<th style="padding: 1%;width: 40%;">
+									Invoice Field
+								</th>
+								<th colspan="4" style="padding: 1%;width: 60%;">
+									Description Fields
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td style="padding: 1%;">
+									LineItem Description 
+								</td>
+								<td colspan="4" style="padding: 1%;">
+									<lightning-combobox name="LineItem Description" label="LineItem Description"
+										value={invoiceConfig.lineItemDescription}
+										placeholder="Select Default LineItem Description" variant="label-hidden"
+										options={productDescOptions} onchange={handleProductDescription}>
+									</lightning-combobox>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div class="slds-align_absolute-center">
+				<lightning-button variant="brand" label="Save" title="Save" disabled={savedisable} onclick={handleSave}
+					class="slds-m-left_x-small"></lightning-button>
+			</div>
+		</article>
+	</template>
+</template>

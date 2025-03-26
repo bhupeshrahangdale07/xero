@@ -1,0 +1,2 @@
+<apex:page standardController="Invoice__c" extensions="NewInvoicePageController" action="{!createInvoice}">
+</apex:page>

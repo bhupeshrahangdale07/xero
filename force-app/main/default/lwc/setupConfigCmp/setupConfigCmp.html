@@ -1,0 +1,482 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={showLoading}>
+        <article class="slds-card invoiceConfig">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <lightning-icon icon-name="utility:bundle_config" alternative-text="Event" title="Event">
+                    </lightning-icon>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title slds-m-left_small">
+                            <a href="#" class="slds-card__header-link slds-truncate" title="Accounts">
+                                <span>Xero Salesforce Setup</span>
+                            </a>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div>
+                <section class="slds-card">
+                    <header class="slds-theme_shade slds-p-around_medium slds-m-bottom_small">
+                        <div class="slds-clearfix">
+                            <div class="slds-float_left">
+                                <p><b>Complete all the steps below to finish setting up Xero Salesforce Connection</b>
+                                </p>
+                            </div>
+                            <div class="slds-float_right">
+                                <p><b>{xeroConnection.progressValue}% Completed</b></p>
+                            </div>
+                        </div>
+                        <lightning-progress-bar value={xeroConnection.progressValue} size="medium" variant="circular">
+                        </lightning-progress-bar>
+                    </header>
+                    <ol class="slds-setup-assistant">
+                        <!-- Authentication setup start || 1st step -->
+                        <li class="slds-setup-assistant__item">
+                            <article class="slds-setup-assistant__step">
+                                <div class="slds-summary-detail slds-is-open">
+                                    <div class="slds-m-right_x-small slds-m-top_x-small">
+                                        <lightning-button-icon icon-name={iconName}  variant="bare" alternative-text="toggle" title="toggleDetails" data-id="xeroConnection" onclick={changeView} disabled={steps.oneStep}></lightning-button-icon>
+                                    </div>
+                                    <div class="slds-container_fluid">
+                                        <div class="slds-summary-detail__title">
+                                            <div class="slds-setup-assistant__step-summary">
+                                                <div class="slds-media">
+                                                    <div class="slds-media__figure">
+                                                        <c-circular-progress-indicator percent={progressPercent} content="1"></c-circular-progress-indicator>
+                                                    </div>
+                                                    <div class="slds-media__body slds-m-top_x-small">
+                                                        <div class="slds-media">
+                                                            <div
+                                                                class="slds-setup-assistant__step-summary-content slds-media__body">
+                                                                <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                                                                    <button class="slds-button slds-button_reset" aria-controls="step-1-summary-action"
+                                                                        aria-expanded="true">Connect Salesforce with Xero</button>
+                                                                </h3>
+                                                                <p>Connect Salesforce with Xero to create Invoices in Xero by providing necessary details. </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <template if:true={showXeroConnection}>
+                                            <div aria-hidden="false" class="slds-summary-detail__content" id="step-1-summary-action">
+                                                <div class="slds-setup-assistant__step-detail">
+                                                    <template if:false={xeroConnection.authenticated}>
+                                                        <div class="row">
+                                                            <div class="column-left">
+                                                                <ul class="progress-bar">
+                                                                    <li class="active" data-id="1">Enter Consumer Key and Secret</li>
+                                                                    <li class={two} data-id="2">Select Tenant</li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="column-right">
+                                                                <!-- First tab Start -->
+                                                                <template if:true={tabs.oneActive}>
+                                                                    <p class="stepTitle"><b>Xero Account Connection</b></p>
+                                                                    <p>To connect your Salesforce Org account and Xero account, please input the Xero Consumer Key below. Please click the "Show Instructions" button below to view the directions for getting this.</p>
+                                                                    <br/>
+                                                                    <div>
+                                                                        <lightning-input name="Consumer Key" type="text" label="Enter consumer key" value={xeroConnection.clientId} onchange={updateValue} disabled={disableInput} required></lightning-input>
+                                                                    </div>
+                                                                    <br/>
+                                                                    <div>
+                                                                        <lightning-input name="Consumer Secret" type="text" label="Enter consumer secret" value={xeroConnection.clientSecret} onchange={updateValue} disabled={disableInput} required></lightning-input>
+                                                                    </div>
+                                                                    <br/>
+                                                                    <div class="slds-align_absolute-center">
+                                                                        <lightning-button variant="brand" label="Show Instructions" title="Show Instructions" class="slds-m-right_x-small" onclick={showInstruction} icon-name="utility:preview"></lightning-button>
+                                                                        <template if:false={xeroConnection.authenticated}>
+                                                                            <template if:true={enableReset}>
+                                                                                <lightning-button variant="destructive-text" label={resetLabel} title="Reset" onclick={handleReset}></lightning-button>
+                                                                            </template>
+                                                                        </template>
+                                                                        <lightning-button variant="brand" label="Save &amp; Connect" title="Save and Connect" class="slds-m-left_x-small" disabled={disableSave} onclick={saveConnection}></lightning-button>
+                                                                        <template if:true={showNext}>
+                                                                            <lightning-button variant="brand-outline" label="Next" title="Next" value="1" class="slds-m-left_x-small" icon-name="utility:forward" onclick={goNext}></lightning-button>
+                                                                        </template>
+                                                                    </div>
+                                                                </template>
+                                                                <!-- First tab End -->
+                                                                <!-- Second tab start -->
+                                                                <template if:true={tabs.twoActive}>
+                                                                    <p class="stepTitle"><b>Select Tenant</b></p>
+                                                                    <p>Fetch Tenant Data and Select related Tenant to Connect Salesforce</p>
+                                                                    <br/>
+                                                                    <lightning-combobox name="Tenant" label="Tenant" value={xeroConnection.tenantId} placeholder="Select Tenant" options={tenantOptions} onchange={handleTenantChange} disabled={xeroConnection.authenticated}></lightning-combobox>
+                                                                    <br/>
+                                                                    <div class="slds-align_absolute-center">
+                                                                        <template if:false={xeroConnection.authenticated}>
+                                                                            <lightning-button variant="brand-outline" label="Back" title="Back" value="2" icon-name="utility:back" onclick={goBack}></lightning-button>
+                                                                        </template>
+                                                                        <lightning-button variant="brand" label="Save" title="Save" class="slds-m-left_x-small" onclick={saveTenant} disabled={xeroConnection.authenticated}></lightning-button>
+                                                                    </div>
+                                                                </template>
+                                                                <!-- Second tab End -->
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                    <template if:true={xeroConnection.authenticated}>
+                                                        <br/>
+                                                        <div class="slds-grid slds-gutters">
+                                                            <div class="slds-col" style="width: 2%;">
+                                                                <lightning-icon icon-name="action:approval" alternative-text="Approved" title="Approved" size="xx-small"></lightning-icon>
+                                                            </div>
+                                                            <div class="slds-col" style="width: 97%;">
+                                                                <span style="font-size: large; font-weight: 600;">&nbsp;Connection steps already completed.</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="slds-grid slds-gutters">
+                                                            <div class="slds-col" style="width: 2%;"></div>
+                                                            <div class="slds-col" style="width: 97%;">
+                                                                <span>Xero Configuration Details are added in Salesforce. If you want to reset your connection, please click <lightning-button variant="base" label="here" title="here" onclick={handleConnectionLink}></lightning-button> to go to the "Connections" Menu.</span>
+                                                            </div>
+                                                        </div>
+                                                        <br/>
+                                                        <lightning-input name="Consumer Key" type="text" label="Consumer key" value={xeroConnection.clientId} disabled></lightning-input>
+                                                        <lightning-input name="Consumer Secret" type="text" label="Consumer secret" value={xeroConnection.clientSecret} disabled></lightning-input>
+                                                        <lightning-combobox name="Tenant" label="Tenant" value={xeroConnection.tenantId} placeholder="Select Tenant" options={tenantOptions} disabled></lightning-combobox>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </article>
+                        </li>
+                        <!-- Authentication setup end || 1st step -->
+                        <!-- Webhook setup start || 2nd step -->
+                        <li class="slds-setup-assistant__item">
+                            <article class="slds-setup-assistant__step">
+                                <div class="slds-summary-detail slds-is-open">
+                                    <div class="slds-m-right_x-small slds-m-top_x-small">
+                                        <lightning-button-icon icon-name={iconName}  variant="bare" alternative-text="toggle" title="toggleDetails" data-id="webhookBtn" onclick={changeView} disabled={steps.twoStep}></lightning-button-icon>
+                                    </div>
+                                    <div class="slds-container_fluid">
+                                        <div class="slds-summary-detail__title">
+                                            <div class="slds-setup-assistant__step-summary">
+                                                <div class="slds-media">
+                                                    <div class="slds-media__figure">
+                                                        <c-circular-progress-indicator percent={progressWebhook} content="2">
+                                                        </c-circular-progress-indicator>
+                                                    </div>
+                                                    <div class="slds-media__body slds-m-top_x-small">
+                                                        <div class="slds-media">
+                                                            <div
+                                                                class="slds-setup-assistant__step-summary-content slds-media__body">
+                                                                <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                                                                    <button class="slds-button slds-button_reset" aria-controls="step-1-summary-action"
+                                                                        aria-expanded="true">Sync Xero with Salesforce</button>
+                                                                </h3>
+                                                                <p>Keep Xero Invoices/Contacts/Payments/Products in sync with Salesforce.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <template if:true={showWebhook}>
+                                            <div aria-hidden="false" class="slds-summary-detail__content">
+                                                <div class="slds-setup-assistant__step-detail">
+                                                    <template if:false={disableWebhookInput}>
+                                                        <ol class="slds-list_ordered">
+                                                            <template if:true={showSiteCreation}>
+                                                                <li>Go to sites setup by clicking on <lightning-button variant="brand" icon-name="utility:forward_up" label="Open Sites" title="Open Sites" class="slds-m-left_x-small" onclick={openSites}></lightning-button></li>
+                                                                <li>Click on a New button of Sites Section.</li>
+                                                                <li>Fill required values like Site Label, Site Name and check other fields as well.</li>
+                                                                <li>Click on Save.</li>
+                                                                <li>Click on refresh button beside the picklist to get site.</li>
+                                                                <li>
+                                                                    <p>
+                                                                        Select Site from below list to generate URL for your Webhook.
+                                                                    </p>
+                                                                    <table>
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <lightning-combobox name="Sites" label="Sites" value={siteVal}
+                                                                                        placeholder="Select Site" variant="label-hidden" options={siteOptions} onchange={fetchSecureURL} disabled={disableWebhookInput}>
+                                                                                    </lightning-combobox>
+                                                                                </td>
+                                                                                <td style="padding: 7px;">
+                                                                                    <lightning-button-icon name="Sites" icon-name="utility:refresh"  variant="brand" alternative-text="Refresh Sites" onclick={getAllSites}></lightning-button-icon>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </li>
+                                                                <li>
+                                                                    <lightning-input type="text" label="Site Secure URL for Xero" value={siteSecureURL} disabled></lightning-input>
+                                                                </li>
+                                                                <li>Copy above URL and Navigate back to the Xero App Manager.</li>
+                                                                <li>Select relevant application and go to the Webhook Option.</li>
+                                                                <li>Select Invoices and Contact options and In Delivery URL field paste above copied link.</li>
+                                                                <li>
+                                                                    <p>Click on Save. It will generate one Webhook key. Please paste that below.</p>
+                                                                    <lightning-input type="text" name ="Encypted Sync Key" label="Encypted Sync Key" value={xeroConnection.webhookKey} disabled={disableWebhookInput} onchange={updateValue}></lightning-input>
+                                                                </li>
+                                                                <li>After enetering the Webhook key. Click on <lightning-button variant="brand" label="Save key" title="Save key" class="slds-m-right_x-small" onclick={handleWebhookSave}></lightning-button></li>
+                                                                <template if:true={disableWebhookSave}>
+                                                                    <li>Go back to Xero App Manager and then to Webhook Setting.</li>
+                                                                    <li>Under Status Section Click on "Send 'Intent to receive'" button.</li>
+                                                                    <li>After few minutes Status will be changed to OK.</li>
+                                                                    <li>Now you can go to Salesforce and Complete Further Steps.</li>
+                                                                </template>
+                                                            </template>
+                                                            <template if:false={showSiteCreation}>
+                                                                <li>
+                                                                    <p>
+                                                                        Select Site from below list to generate URL for your Webhook.
+                                                                    </p>
+                                                                    <lightning-combobox name="Sites" label="Sites" value={siteVal}
+                                                                        placeholder="Select Site" variant="label-hidden" options={siteOptions} disabled={disableWebhookInput} onchange={fetchSecureURL}>
+                                                                    </lightning-combobox>
+                                                                </li>
+                                                                <li>
+                                                                    <lightning-input type="text" label="Site Secure URL for Xero" value={siteSecureURL} disabled></lightning-input>
+                                                                </li>
+                                                                <li>Copy above URL and Navigate back to the Xero App Manager.</li>
+                                                                <li>Select relevant application and go to the Webhook Option.</li>
+                                                                <li>Select Invoices and Contact options and In Delivery URL field paste above copied link.</li>
+                                                                <li>
+                                                                    <p>Click on Save. It will generate one Webhook key. Please paste that below.</p>
+                                                                    <lightning-input type="text" name ="Encypted Sync Key" label="Encypted Sync Key" value={xeroConnection.webhookKey} disabled={disableWebhookInput} onchange={updateValue}></lightning-input>
+                                                                </li>
+                                                                <br/>
+                                                                <li>After enetering the Webhook key. Click on &nbsp;<lightning-button variant="brand" label="Save key" title="Save key" class="slds-m-right_x-small" onclick={handleWebhookSave}></lightning-button></li>
+                                                                <template if:true={disableWebhookSave}>
+                                                                    <li>Go back to Xero App Manager and then to Webhook Setting.</li>
+                                                                    <li>Under Status Section Click on "Send 'Intent to receive'" button.</li>
+                                                                    <li>After few minutes Status will be changed to OK.</li>
+                                                                    <li>Click on Save and Proceed with Further Steps.</li>
+                                                                </template>
+                                                            </template>
+                                                        </ol>
+                                                        <br/>
+                                                        <div class="slds-align_absolute-center">
+                                                            <lightning-button variant="brand" label="Save" title="Save" class="slds-m-right_x-small" onclick={webhookStepSave} disabled={disableStepSave}></lightning-button>
+                                                        </div>
+                                                    </template>
+                                                    <template if:true={disableWebhookInput}>
+                                                        <br/>
+                                                        <div class="slds-grid slds-gutters">
+                                                            <div class="slds-col" style="width: 2%;">
+                                                                <lightning-icon icon-name="action:approval" alternative-text="Approved" title="Approved" size="xx-small"></lightning-icon>
+                                                            </div>
+                                                            <div class="slds-col" style="width: 97%;">
+                                                                <span style="font-size: large; font-weight: 600;">&nbsp;Steps for sync between Xero and Salesforce are already completed.</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="slds-grid slds-gutters">
+                                                            <div class="slds-col" style="width: 2%;"></div>
+                                                            <div class="slds-col" style="width: 97%;">
+                                                                <span>Xero is already in sync with Salesforce with below Syc Key. If you want to reset sync please click <lightning-button variant="base" label="here" title="here" onclick={handleConnectionLink}></lightning-button></span> to go to the "Connection" Menu.
+                                                            </div>
+                                                        </div>
+                                                        <br/>
+                                                        <lightning-input type="text" name ="Webhook Key" label="Webhook Key" value={xeroConnection.webhookKey} disabled={disableWebhookInput} onchange={updateValue}></lightning-input>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </article>
+                        </li>
+                        <!-- Webhook setup end || 2nd step -->
+                        <!-- Permission Assignment setup start || 3rd step -->
+                        <li class="slds-setup-assistant__item">
+                            <article class="slds-setup-assistant__step">
+                                <div class="slds-summary-detail slds-is-open">
+                                    <div class="slds-m-right_x-small slds-m-top_x-small">
+                                        <lightning-button-icon icon-name={iconName}  variant="bare" alternative-text="toggle" title="toggleDetails" data-id="permissionBtn" onclick={changeView} disabled={steps.threeStep}></lightning-button-icon>
+                                    </div>
+                                    <div class="slds-container_fluid">
+                                        <div class="slds-summary-detail__title">
+                                            <div class="slds-setup-assistant__step-summary">
+                                                <div class="slds-media">
+                                                    <div class="slds-media__figure">
+                                                        <c-circular-progress-indicator percent={progressPermission} content="3">
+                                                        </c-circular-progress-indicator>
+                                                    </div>
+                                                    <div class="slds-media__body slds-m-top_x-small">
+                                                        <div class="slds-media">
+                                                            <div
+                                                                class="slds-setup-assistant__step-summary-content slds-media__body">
+                                                                <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                                                                    <button class="slds-button slds-button_reset" aria-controls="step-1-summary-action"
+                                                                        aria-expanded="true">Assign Permission Sets</button>
+                                                                </h3>
+                                                                <p>Assign Permission Sets to the users based on their permissions and restrictions.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <template if:true={showXeroPermission}>
+                                            <div aria-hidden="false" class="slds-summary-detail__content">
+                                                <div class="slds-setup-assistant__step-detail">
+                                                    <lightning-tabset variant="vertical">
+                                                        <lightning-tab label="Xero Integration Admin" value="Xero_Integration_Admin">
+                                                            <div class="slds-align_absolute-center">
+                                                                <b>Xero Integration Admin</b>
+                                                            </div>
+                                                            <p>User with this permission set can perform all functions, including connecting to and disconnecting from Xero entities, and setting the configuration of Xero Integration.</p>
+                                                            <br/>
+                                                            <template if:false={disablePermissionSave}>
+                                                                <div class="slds-align_absolute-center">
+                                                                    <lightning-button variant="brand" label="Assign this Permission Set to a Users" title="Assign this Permission Set to a User" onclick={handlePermission} class="slds-m-left_x-small" value="Xero_Integration_Admin"></lightning-button>
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={disablePermissionSave}>
+                                                                <div class="slds-align_absolute-center">
+                                                                    <span><lightning-icon icon-name="utility:info_alt" alternative-text="info" size="x-small" title="info"></lightning-icon> If you want to manage permission set assignment for this permissionset, please click <lightning-button variant="base" label="here" title="here" onclick={handlePermissionLink}></lightning-button></span>
+                                                                </div>
+                                                            </template>
+                                                        </lightning-tab>
+                                                        <lightning-tab label="Xero Integration Operational" value="Xero_Integration_Operational">
+                                                            <div class="slds-align_absolute-center">
+                                                                <b>Xero Integration Operational</b>
+                                                            </div>
+                                                            <p>User with this permission can see all data (just like Read Only) and also allows the creation of Invoices and Xero Contacts, and the editing of Xero Contacts, and can also run Batch Invoices, Match Xero Contacts to Salesforce Accounts, Import Inventory Items as Salesforce Products. Users can also change which Salesforce Account a Xero Contact is associated with, or change whether that Xero Contact syncs Invoices or not.</p>
+                                                            <br/>
+                                                            <template if:false={disablePermissionSave}>
+                                                                <div class="slds-align_absolute-center">
+                                                                    <lightning-button variant="brand" label="Assign this Permission Set to a Users" title="Assign this Permission Set to a User" onclick={handlePermission} class="slds-m-left_x-small" value="Xero_Integration_Operational"></lightning-button>
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={disablePermissionSave}>
+                                                                <div class="slds-align_absolute-center">
+                                                                    <span><lightning-icon icon-name="utility:info_alt" alternative-text="info" size="x-small" title="info"></lightning-icon> If you want to manage permission set assignment for this permissionset, please click <lightning-button variant="base" label="here" title="here" onclick={handlePermissionLink}></lightning-button></span>
+                                                                </div>
+                                                            </template>
+                                                        </lightning-tab>
+                                                        <lightning-tab label="Xero Integration User Read Only" value="Xero_Integration_User_Read_Only">
+                                                            <div class="slds-align_absolute-center">
+                                                                <b>Xero Integration User Read Only</b>
+                                                            </div>
+                                                            <p>Users with this Permission Set can only view Xero data like Invoices &amp; Xero Contacts from the various tabs. This will also allow a user to run reports on Xero data.</p>
+                                                            <br/>
+                                                            <template if:false={disablePermissionSave}>
+                                                                <div class="slds-align_absolute-center">
+                                                                    <lightning-button variant="brand" label="Assign this Permission Set to a Users" title="Assign this Permission Set to a User" onclick={handlePermission} class="slds-m-left_x-small" value="Xero_Integration_User_Read_Only"></lightning-button>
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={disablePermissionSave}>
+                                                                <div class="slds-align_absolute-center">
+                                                                    <span><lightning-icon icon-name="utility:info_alt" alternative-text="info" size="x-small" title="info"></lightning-icon> If you want to manage permission set assignment for this permissionset, please click <lightning-button variant="base" label="here" title="here" onclick={handlePermissionLink}></lightning-button></span>
+                                                                </div>
+                                                            </template>
+                                                        </lightning-tab>
+                                                    </lightning-tabset> 
+                                                    <br/>
+                                                    <template if:false={disablePermissionSave}>
+                                                        <div class="slds-align_absolute-center">
+                                                            <lightning-button variant="brand" label="Completed" title="Completed" class="slds-m-right_x-small" onclick={handleSavePermission} disabled={disablePermissionSave}></lightning-button>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </article>
+                        </li>
+                        <!-- Permission Assignment setup end || 3rd step -->
+                        <!-- Opportunity page layout setup start || 4th step -->
+                        <li class="slds-setup-assistant__item">
+                            <article class="slds-setup-assistant__step">
+                                <div class="slds-summary-detail slds-is-open">
+                                    <div class="slds-m-right_x-small slds-m-top_x-small">
+                                        <lightning-button-icon icon-name={iconName}  variant="bare" alternative-text="toggle" title="toggleDetails" data-id="opportunityBtn" onclick={changeView} disabled={steps.fourStep}></lightning-button-icon>
+                                    </div>
+                                    <div class="slds-container_fluid">
+                                        <div class="slds-summary-detail__title">
+                                            <div class="slds-setup-assistant__step-summary">
+                                                <div class="slds-media">
+                                                    <div class="slds-media__figure">
+                                                        <c-circular-progress-indicator percent={progressLayout} content="4">
+                                                        </c-circular-progress-indicator>
+                                                    </div>
+                                                    <div class="slds-media__body slds-m-top_x-small">
+                                                        <div class="slds-media">
+                                                            <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                                                                <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                                                                    <button class="slds-button slds-button_reset" aria-controls="step-1-summary-action"
+                                                                        aria-expanded="true">Opportunity &amp; Account Page layout setup</button>
+                                                                </h3>
+                                                                <p>Add Invoices to the Opportunity &amp; Account Page layout for the better lookout while creating and managing Invoices.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <template if:true={showOpportunity}>
+                                            <div aria-hidden="false" class="slds-summary-detail__content">
+                                                <div class="slds-setup-assistant__step-detail">
+                                                    <ol class="slds-list_ordered">
+                                                        <li>Go to Setup on top right corner.</li>
+                                                        <li>Click on Object Manager and serach for Opportunity.</li>
+                                                        <li>Select Page Layouts from the left side menubar.</li>
+                                                        <li>Open Opportunity Page Layout.</li>
+                                                        <li>On the Opportunity Page Layout, Select "Related Lists" option from the right side menu.</li>
+                                                        <li>Search for "Invoices". Drag and drop Invoices to the Related Lists section.</li>
+                                                        <li>Now to add "Create Invoice" button on record page, Select "Mobile & Lightning Actions" from the left side menu.</li>
+                                                        <li>Drag "Create Invoice" button and drop to the "Salesforce Mobile and Lightning Experience Actions" section.</li>
+                                                        <li>Save Page Layout.</li>
+                                                        <li>Repeat the steps to add the "Create Invoice" button and Invoices Related List on Account Page Layout.</li>
+                                                    </ol>
+                                                    <br/>
+                                                    <div class="slds-align_absolute-center">
+                                                        <lightning-button variant="brand" label="Completed" title="Completed" class="slds-m-right_x-small" onclick={layoutUpdated} disabled={disableLayoutSave}></lightning-button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </article>
+                        </li>
+                        <!-- Opportunity page layout setup end || 4th step -->
+                    </ol>
+                </section>
+            </div>
+            <!-- Modal Popup start -->
+            <div>
+                <c-modal-pop-up 
+                    show-modal={showModal} 
+                    show-positive={showPositiveButton}
+                    show-negative={showNegativeButton}
+                    positive-button-label={positiveButtonLabel}
+                    onpositive={closeModal}
+                    onclose={closeModal}>
+                    <div slot="header">
+                        <h2 slot="header" id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Instructions to get Consumer Key and Secret</h2>
+                    </div>
+                    <div slot="body">
+                        <ol class="slds-list_ordered">
+                            <li>Navigate to <a href="https://developer.xero.com/myapps" target="_blank">Xero App</a>.</li>
+                            <li>Click the "New App" button.</li>
+                            <li>Enter relatable Name in App name.</li>
+                            <li>Select "Web app" in Integration type</li>
+                            <li>Provide company or application URL.</li>
+                            <li>Provide this redirect URL - <br/><b> {redirectURL} </b></li>
+                            <li>Enter related website or URL in Company or application URL or you can keep it blank.</li>
+                            <li>Read Terms &amp; Conditions and tick the checkbox.</li>
+                            <li>Click on "Create app" button.</li>
+                            <li>Select Configuration from the left side menubar.</li>
+                            <li>Click on Generate Secret Key.</li>
+                            <li>Copy client Id and secret and paste in Salesforce respectively.</li>
+                        </ol>                            
+                    </div>
+                </c-modal-pop-up>
+            </div>
+            <!-- Modal Popup end -->
+        </article>
+    </template>
+</template>

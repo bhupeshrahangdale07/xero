@@ -1,0 +1,106 @@
+.spanClass{
+    font-size: large;
+    font-weight: bold;
+}
+
+td{
+    /* height: 50px; */
+    padding: 7px;
+}
+
+th{
+    height: 50px;
+    padding: 7px;
+}
+.totalClass{
+    text-align: end;
+    /* font-size: large; */
+}
+.Total{
+    /* font-size: large; */
+}
+.show {
+    display: block;
+}
+
+.verticalAlign {
+    cursor: pointer;
+    padding: 0px 5px !important;
+}
+.slds-dropdown {
+    padding:0px !important;
+}
+.recordListBox {
+    margin-top:0px !important;
+    overflow-y: scroll;
+}
+.slds-listbox li {
+    padding: .45rem 0.7rem !important;
+    /* display: table-caption; */
+    display: flex;
+}
+.inputBox input {
+    padding-left: 10px;
+}
+.eachItem:hover {
+    background-color: #F1F1F1;
+    cursor: pointer;
+}
+
+/* For Scrolling */
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+::-webkit-scrollbar-track {
+    display: none !important;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4);
+}
+.slds-dropdown_fluid{
+    margin-top: 0px;
+}
+
+.invoiceTable{
+    /* width: 110px; */
+}
+
+.productSearch{
+    width: 140px;
+}
+
+@media (max-width:500px) {
+    table{
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap
+    }
+    .productSearch{
+        width: 110px;
+    }
+    .invoiceTable{
+        width: 110px;
+    }
+}
+
+
+@media (max-width: 1024px) {
+    .invoiceTable{
+        width: 110px;
+    }
+}
+@media (min-width: 481px) and (max-width: 810px) { 
+    table{
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap
+    }
+    .productSearch{
+        width: 110px;
+    }
+    .invoiceTable{
+        width: 110px;
+    }
+}

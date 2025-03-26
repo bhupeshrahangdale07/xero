@@ -1,0 +1,25 @@
+td {
+    text-align: left;
+    height: 50px;
+    padding: 15px;
+}
+th{
+    text-align: center;
+    height: 50px;
+    padding: 15px;
+}
+table{
+    border: 1px solid black;
+}
+thead{
+    background: lightskyblue;
+}
+.firstcol{
+    text-align: right;
+}
+.bottonRow{
+    border-bottom: solid 1px black;
+}
+.sectionbgcolour{
+    background-color: darkgray;
+}

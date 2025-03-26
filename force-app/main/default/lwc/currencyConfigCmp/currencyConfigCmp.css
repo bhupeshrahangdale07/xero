@@ -1,0 +1,53 @@
+.currencyConfig .slds-card__header.slds-grid {
+    border-bottom: 3px solid #00A1E0;
+    box-shadow: 3px 0px 3px #00a1e0;
+    padding: 18px;
+}
+
+/* td{
+    padding: 7px;
+     width: 50%;
+    height: 50px;
+    padding: 7px;
+}
+
+ */
+.stepTitle{
+    font-size: x-large;
+}
+th{
+   background-color: lightgray;
+   width: 50%;
+    height: 50px;
+    padding: 7px;
+    
+}
+td{
+    padding: 7px;
+}
+
+
+
+
+/* .tableFixHead {
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+  .tableFixHead tbody {
+    width: 100%;
+    overflow: auto;
+    height: 900px;
+    padding: 7px;
+  } */
+   /* th {
+    padding: 5px 10px;
+    width: 200px;
+  }
+  td {
+    padding: 5px 10px;
+    width: 200px;
+  } */
+  /*.tableFixHead thead tr {
+    display: block;
+  } 
+  */

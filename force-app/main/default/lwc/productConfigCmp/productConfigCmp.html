@@ -1,0 +1,109 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={showLoading}>
+        <article class="slds-card invoiceConfig">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <lightning-icon icon-name="utility:product_workspace" alternative-text="Event" title="Event">
+                    </lightning-icon>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title slds-m-left_small">
+                            <a href="#" class="slds-card__header-link slds-truncate" title="Accounts">
+                                <span>Product/Xero Items Configuration</span>
+                            </a>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">
+                    SALESFORCE PRODUCTS AND XERO ITEMS SYNC SETTINGS
+                </div>
+            
+                <div class="slds-form-element slds-m-bottom_small">
+                    <label class="slds-checkbox_toggle slds-grid">
+                      <input type="checkbox" checked={invoiceConfig.createItem} name="createItem" onchange={handleChange} />
+                      <span class="slds-checkbox_faux_container" aria-live="assertive" style="position: absolute;">
+                        <div class="slds-checkbox_faux"></div>
+                        <div class="slds-checkbox_on toggleMsg slds-m-top_xx-small" style="font-size: 110%;">Create Item in Xero</div>
+                        <div class="slds-checkbox_off toggleMsg slds-m-top_xx-small" style="font-size: 110%;">Don't Create Item in Xero</div>
+                      </span>
+                      
+                      <span class="slds-form-element__label slds-m-bottom_none" style="padding-left: 60px;">
+                            <!--When the system discovered the salesforce product utilised in the invoice is not in Xero-->
+                            Create Xero Item in Xero when the system discovers the Salesforce Product utilized in Invoice is not in Xero. 
+                        </span>
+                    </label>
+                </div>
+                <br/><br/>
+
+                <div class="slds-form-element slds-m-bottom_small">
+                    <label class="slds-checkbox_toggle slds-grid">
+                      <input type="checkbox" checked={invoiceConfig.createProduct} name="createProduct" onchange={handleChange} />
+                      <span class="slds-checkbox_faux_container" aria-live="assertive" style="position: absolute;">
+                        <div class="slds-checkbox_faux"></div>
+                        <div class="slds-checkbox_on toggleMsg slds-m-top_xx-small" style="font-size: 110%;">Create Product in Salesforce</div>
+                        <div class="slds-checkbox_off toggleMsg slds-m-top_xx-small" style="font-size: 110%;">Don't Create Product in Salesforce</div>
+                      </span>
+                      
+                      <span class="slds-form-element__label slds-m-bottom_none" style="padding-left: 60px;">
+                            <!--When a new item is found in Xero during a regular sync that is absent from salesforce-->
+                            Create Product in Salesforce when a new item is found in Xero not existing in Salesforce. 
+                        </span>
+                    </label>
+                </div>
+
+                
+            </div>
+            <br/>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">
+                    Sync Salesforce Products using Xero Item
+                </div>
+                <template if:true={isInProgress}>
+                    <br/>
+                    <lightning-button variant="brand" label="Refresh" title="Refresh" onclick={handleRefresh} class="slds-m-left_x-small"></lightning-button>
+                    <br/>
+                    <div style="padding:100px">
+                        <div class="slds-align_absolute-center">
+                            <img class="img-cls" style="width:20%;" alt="Processing Invoice" src={invoiceLoading}>
+                        </div>
+                        <div class="slds-text-longform slds-align_absolute-center" style="color: #74706f;">
+                            <!-- <h3 class="slds-text-heading_large" style="font-size: xx-large;">Processing Invoices...</h3> -->
+                            <p class="slds-text-heading_large saving" style="font-size: xx-large;">Processing Xero Items<span>.</span><span>.</span><span>.</span></p>
+                        </div>
+                        <div class="slds-text-longform slds-align_absolute-center" style="color: #74706f;">
+                            <h3 class="slds-text-heading_small" >Salesforce Product sync is already in progress. You will be notified via email once the process is completed.</h3>
+                        </div>
+
+                    </div>
+                </template>
+                <template if:false={isInProgress}>
+                    <div class="slds-p-around_small Note">
+                        <h3><b>Notes: Xero Item will be synced to the Salesforce Product</b></h3>
+                        <ul class="slds-list_dotted">
+                            <li>Process will update the salesforce product if the Xero Item Code matches with Salesforce Product Code.</li>
+                            <li>If the product code doesn't match then process will create a new product in Salesforce.</li>
+                            <li>
+                                Salesforce Product will be updated/Created with below Xero Item details:
+                                <ul class="slds-list_ordered">
+                                    <li>Xero Item Id</li>
+                                    <li>Sales Account Code</li>
+                                    <li>Sales Tax Rate</li>
+                                    <li>Xero Item Sales Description</li>
+                                    <li>Purchase Account Code</li>
+                                    <li>Purchase Tax Rate</li>
+                                    <li>Xero Item Purchase Description</li>
+                                </ul>   
+                            </li>
+                        </ul>
+                    </div>
+                    <br/>
+                    <lightning-button variant="brand" label="Sync Products" title="Sync Products" onclick={handleSync} class="slds-m-left_x-small"></lightning-button>
+                </template>
+            </div>
+        </article>
+    </template>
+</template>

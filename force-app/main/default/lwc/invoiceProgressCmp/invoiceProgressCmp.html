@@ -1,0 +1,15 @@
+<template>
+  <div class="spinner">
+    <template if:true={isLoading}>
+         <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+         </lightning-spinner>
+    </template>
+  </div>
+  <lightning-progress-indicator current-step={progressValue} type="path" variant="base">
+    <template if:true={isOpportunityInvoice}>
+      <lightning-progress-step label="Opportunity" value="Opp"></lightning-progress-step>
+    </template>
+    <lightning-progress-step label="Select Xero Contact" value="Contact"></lightning-progress-step>
+    <lightning-progress-step label="Invoice Generation" value="Invoice"></lightning-progress-step>
+  </lightning-progress-indicator>
+</template>

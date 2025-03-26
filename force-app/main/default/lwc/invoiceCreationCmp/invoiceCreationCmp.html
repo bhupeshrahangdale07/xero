@@ -1,0 +1,252 @@
+<template>
+    <div if:false={showLoadingSpinner}>
+        <lightning-spinner
+            alternative-text="Loading..." variant="brand">
+        </lightning-spinner>
+    </div>
+    <lightning-card>
+        <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Invoice Details</span>
+            </h3>
+            <br />
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col" style="width: 50%;">
+                    <span class="spanClass">To:</span>
+                    <p>{accountDetails.accName}</p>
+                    <p>
+                        <template if:true={accountDetails.accStreet}>{accountDetails.accStreet}
+                            <template if:true={accountDetails.accCity}>, </template>
+                        </template>
+
+                    </p>
+                    <p>
+                        <template if:true={accountDetails.accCity}>{accountDetails.accCity}</template>
+                        <template if:true={accountDetails.accState}>, {accountDetails.accState}
+                            <template if:true={accountDetails.accCountry}>, </template> 
+                        </template> 
+                    </p>
+                    <p>
+                        <template if:true={accountDetails.accCountry}>
+                            {accountDetails.accCountry} 
+                            <template if:true={accountDetails.accPostalCode}>, </template> 
+                        </template>
+                    </p>
+                    <p>
+                        <template if:true={accountDetails.accPostalCode}> {accountDetails.accPostalCode}.</template> 
+                    </p>
+                    <br />
+                </div>
+                <div class="slds-col" style="width: 50%;">
+                    <span class="spanClass">Primary Contact:</span>
+                    <p>{contactDetails.conFirstName} {contactDetails.conLastName}</p>
+                    <p>{contactDetails.conEmail}</p>
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col" style="width: 50%;">
+                    <lightning-combobox name="Invoice Template" label="Invoice Template" value={templateValue}
+                        placeholder="Select Invoice Template" options={templateOptions} onchange={fieldshandleChange} required>
+                    </lightning-combobox>
+                    <br />
+                    <lightning-input type="text" name="Reference" label="Reference" value={refValue} title=Reference
+                        onchange={fieldshandleChange}></lightning-input>
+                    <br/>
+
+                    <lightning-combobox   name="Currency"
+                        label="Currency" value={CurrencyIsoCode} placeholder=""
+                        options={currencyOptions} onchange={currencyhandleChange}></lightning-combobox>
+                </div>
+                <div class="slds-col" style="width: 50%;">
+                    <lightning-input type="date" name="Invoice Date" label="Invoice Date" value={invoiceDate}
+                        onchange={fieldshandleChange} required></lightning-input>
+                    <br />
+                    <lightning-input type="date" name="Invoice Due Date" label="Invoice Due Date" value={invoicedueDate}
+                        onchange={fieldshandleChange}></lightning-input>
+                    <br />
+                    
+                    <lightning-combobox name="Amount Tax Options" label="Amounts are" value={amountTaxValue}
+                        placeholder="Select Tax Inclusion/Exclusion" options={amountTaxOptions}
+                        onchange={amounttaxhandleChange}></lightning-combobox>
+                </div>
+            </div>
+            <br />
+
+            
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Discount</th>
+                            <th>Account</th>
+                            <th>Tax Rate</th>
+                            <template for:each={trackmapData} for:item="map">
+                                <th key={map.key}>{map.key}</th>
+                            </template>
+                            <th>Amount</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={lineitemsRecords} for:item="li">
+                            <tr key={li.id}>
+                                <td>
+                                    <div class="slds-form-element invoiceTable">
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-combobox_container">
+                                                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" aria-expanded="true" aria-haspopup="listbox" role="combobox" data-id={li.id}>
+                                                    <!-- Search Input -->
+                                                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                                        <lightning-input class="inputBox" placeholder="Search Product..." onclick={filterOptions} onkeyup={filterOptions} value={li.inputValue} data-id={li.id} variant="label-hidden" id="combobox-id-1" onblur={handleInputBlur}></lightning-input>
+                                                        <lightning-icon class="slds-input__icon" icon-name="utility:search" size="x-small" alternative-text="downicon"></lightning-icon>
+                                                    </div>
+                                                    <!-- Dropdown List -->
+                                                    <template if:true={li.showDropdown}>
+                                                        <div id="listbox-id-1" tabindex="0" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" style="min-width: auto;" role="listbox" data-id={li.id} onmousedown={handleDivClick} onblur={handleBlur}>
+                                                            <ul class="slds-listbox slds-listbox_vertical recordListBox" role="presentation">
+                                                                <template if:true={filteredProducts} >
+                                                                    <template for:each={filteredProducts} for:item="option">
+                                                                        <li key={option.id} class="slds-listbox__item eachItem" data-id={li.id} data-item={option.id}>
+                                                                            <div onclick={selectItem} data-id={li.id}>
+                                                                                <span data-item={option.id} data-id={li.id} onclick={selectItem} class="slds-media slds-listbox__option_entity verticalAlign slds-has-flexi-truncate">{option.productCode}: {option.name}</span>
+                                                                            </div>
+                                                                        </li>
+                                                                    </template>
+                                                                </template>
+                                                                <template if:false={filteredProducts} >
+                                                                    <li class="slds-listbox__item">
+                                                                        <span class="slds-media slds-listbox__option_entity verticalAlign slds-truncate">No product found</span>
+                                                                    </li>                                       
+                                                                </template>
+                                                            </ul>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <lightning-input data-id={li.id} name="Description" type="text"
+                                        variant="label-hidden" label="Description" value={li.description}
+                                        onchange={updateValues}></lightning-input>
+                                </td>
+                                <td>
+                                    <lightning-input data-id={li.id} name="Quantity" type="text"
+                                        variant="label-hidden" label="Quantity" value={li.quantity} min="0"
+                                        onchange={updateValues} onfocusout={updateDecimalPlaces}></lightning-input>
+                                </td>
+                                <td>
+                                    <lightning-input data-id={li.id}  name="Unit Price" type="text"
+                                        variant="label-hidden" label="Unit Price" value={li.unitPrice}
+                                        onchange={updateValues} onfocusout={updateDecimalPlaces}></lightning-input>
+                                </td>
+                                <td>
+                                    <lightning-input data-id={li.id} name="Discount" type="text"
+                                        variant="label-hidden" label="Discount" value={li.discount}
+                                        onchange={updateValues} onfocusout={updateDecimalPlaces}></lightning-input>
+                                </td>
+                                <td>
+                                    <div class="invoiceTable">
+                                        <lightning-combobox data-id={li.id} variant="label-hidden" required name="Account"
+                                            label="Account" value={li.account} placeholder="Account"
+                                            options={accountOptions} onchange={updateValues}></lightning-combobox>
+                                    </div>
+                                </td>
+                                <td>
+                                    <lightning-combobox data-id={li.id} variant="label-hidden" name="TaxRate"
+                                        label="TaxRate" value={li.taxRate} placeholder="Tax Rates" options={taxOptions}
+                                        onchange={updateValues} onfocusout={updateDecimalPlaces} disabled={taxDisable}></lightning-combobox>
+                                </td>
+                                <template for:each={li.trackingData} for:item="map">
+                                    <td key={map.key}>
+                                        <lightning-combobox name={map.key} label="trackingCategory" data-id={li.id} variant="label-hidden" options={map.value.options}
+                                            placeholder="Select Tracking Category Option" value={map.value.defaultVal} onchange={handleTracking}>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <td>
+                                    <lightning-input data-id={li.id} name="Amount" type="number" variant="label-hidden"
+                                        label="Amount" value={li.amount} onfocusout={updateDecimalPlaces} onchange={updateValues} disabled>
+                                    </lightning-input>
+                                </td>
+                                <td>
+                                    <template if:false={disableDelete}>
+                                        <lightning-button-icon data-id={li.id} icon-name="action:delete" variant="brand"
+                                            alternative-text="Delete" class="slds-m-left_xx-small" title="Delete"
+                                            onclick={removeClick}></lightning-button-icon>
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                        <tr>
+                            <td>
+                                <lightning-button-icon icon-name="utility:add" size="medium" variant="brand"
+                                    alternative-text="Add lineItem" class="slds-m-left_xx-small" title="Add lineItem"
+                                    onclick={addlineitemClick}></lightning-button-icon>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <template if:true={showProductCode}>
+                                <td></td>
+                            </template>
+                            <td colspan="3" class="totalClass">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="Total">Subtotal</span></td>
+                                            <td style="text-align: end;">
+                                                <lightning-formatted-number value={invoiceSubtotal}>
+                                                </lightning-formatted-number>
+                                            </td>
+                                        </tr>
+                                        <template if:true={taxShow}>
+                                            <template for:each={taxMap} for:item="map">
+                                                <tr key={map.key}>
+                                                    <td><span class="Total"> {includes} Tax ( {map.key} )</span></td>
+                                                    <td style="text-align: end;">
+                                                        <lightning-formatted-number value={map.value}>
+                                                        </lightning-formatted-number>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </template>
+                                        <tr style="border-top-style: solid;">
+                                            <td>
+                                                <span class="Total">Total</span>
+                                            </td>
+                                            <td style="text-align: end;">
+                                                <span class="Total">
+                                                    <lightning-formatted-number value={invoiceTotal}>
+                                                    </lightning-formatted-number>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </lightning-card>
+</template>

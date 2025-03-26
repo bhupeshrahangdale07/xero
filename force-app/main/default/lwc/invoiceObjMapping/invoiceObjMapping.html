@@ -1,0 +1,473 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <div>
+        <p><lightning-icon icon-name="utility:info_alt" alternative-text="info" size="small"
+                title="info"></lightning-icon>
+            &nbsp;&nbsp;You can use this to map your custom object instead of default package objects. You can select the object and than map the related fields.
+        </p>
+    </div>
+    <br/>
+    <div>
+        <div class="border">
+            <!-- Xero Contact Object starts here -->
+            <div style="border: groove;border-radius: 20px;padding: 1%;background: gainsboro;">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col" style="text-align: center; width: 30%">Xero Contact Object</div>
+                    <div class="slds-col" style="width: 30%;"><lightning-button-icon icon-name={xeroConMappingIcon} alternative-text="right" title="right" name="XeroConObj" onclick={handleFieldMapping} disabled={xeroConObjMappingDisable}></lightning-button-icon></div>
+                    <div class="slds-col" style="width: 40%;">
+                        <c-custom-lookup-lwc
+                            is-required=true
+                            onobjectselected={handleXCObjSelected}
+                            onobjclear={clearXCObj}
+                            selected-object-a-p-i-name={xeroConobjectAPI}
+                            is-object-selection-r-o={isObjectSelectionRO}>
+                        </c-custom-lookup-lwc>
+                    </div>
+                </div>
+                <template if:true={showXeroConFieldMapping}>
+                    <br/>
+                    <div style="background-color: white;">
+                        <table>
+                            <thead style="background: #a1cfe1;">
+                                <tr>
+                                    <th>
+                                        Xero Fields
+                                    </th>
+                                    <th>
+                                        Salesforce Object Fields&nbsp;&nbsp;<lightning-button-icon size="x-small" name="XC" icon-name="utility:refresh"  variant="border-filled" alternative-text="Referesh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={xeroConMapping} for:item="xcMap">
+                                    <tr key={xcMap.id}>
+                                        <td>{xcMap.fieldValue}</td>
+                                        <!-- <td>{invMap.fieldApiName}</td> -->
+                                        <td>
+                                            <template if:true={xcMap.fieldOption}>
+                                                <lightning-combobox
+                                                    name="Xero Contact field"
+                                                    label="field"
+                                                    variant="label-hidden"
+                                                    data-id={xcMap.id}
+                                                    value={xcMap.fieldApiName}
+                                                    placeholder="Select field"
+                                                    options={xcMap.fieldOption}
+                                                    onchange={handleInvFieldChange} ></lightning-combobox>
+                                            </template>
+                                            <template if:false={xcMap.fieldOption}>
+                                                <template if:false={xcMap.referenceObjName}>
+                                                    <p class="errortxt">No field of type {xcMap.dataType} is currently present. Please create a new field.</p>
+                                                </template>
+                                                <template if:true={xcMap.referenceObjName}>
+                                                    <p class="errortxt">No field of type {xcMap.dataType} is currently present for "{xcMap.referenceObjName}". Please create a new field.</p>
+                                                </template>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <template if:true={showXCBt}>
+                        <br/>
+                        <div class="slds-align_absolute-center">
+                            <lightning-button variant="destructive" label="Cancel" name="xcCancel" title="Cancel" onclick={handleClick}></lightning-button>
+                            <lightning-button variant="brand" label="Save" name="xcSave" title="Save" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            <!-- Xero Contact Object ends here -->
+        </div>
+        <br/>
+        <div class="border">
+            <!-- Invoice Object starts here -->
+            <div style="border: groove;border-radius: 20px;padding: 1%;background: gainsboro;">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col" style="text-align: center; width: 30%;">Invoice Object</div>
+                    <div class="slds-col" style="width: 30%;"><lightning-button-icon icon-name={invMappingIcon} alternative-text="right" title="right" name="InvoiceObj" onclick={handleFieldMapping} disabled={invObjMappingDisable}></lightning-button-icon></div>
+                    <div class="slds-col" style="width: 40%;">
+                        <c-custom-lookup-lwc
+                            is-required=true
+                            onobjectselected={handleInvObjectSelected}
+                            onobjclear={clearInvObj}
+                            selected-object-a-p-i-name={invobjectAPI}
+                            is-object-selection-r-o={isObjectSelectionRO}>
+                        </c-custom-lookup-lwc>
+                    </div>
+                </div>
+                <template if:true={showINVFieldMapping}>
+                    <br/>
+                    <div style="background-color: white;">
+                        <table>
+                            <thead style="background: #a1cfe1;">
+                                <tr>
+                                    <th>
+                                        Xero Fields
+                                    </th>
+                                    <th>
+                                        Salesforce Object Fields&nbsp;&nbsp;<lightning-button-icon size="x-small" name="Invoice Obj" icon-name="utility:refresh"  variant="border-filled" alternative-text="Referesh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={invMapping} for:item="invMap">
+                                    <tr key={invMap.id}>
+                                        <td>{invMap.fieldValue}</td>
+                                        <!-- <td>{invMap.fieldApiName}</td> -->
+                                        <td>
+                                            <template if:true={invMap.fieldOption}>
+                                                <lightning-combobox
+                                                    name="Invoice field"
+                                                    label="field"
+                                                    variant="label-hidden"
+                                                    data-id={invMap.id}
+                                                    value={invMap.fieldApiName}
+                                                    placeholder="Select field"
+                                                    options={invMap.fieldOption}
+                                                    onchange={handleInvFieldChange} ></lightning-combobox>
+                                            </template>
+                                            <template if:false={invMap.fieldOption}>
+                                                <template if:false={invMap.referenceObjName}>
+                                                    <p class="errortxt">No field of type {invMap.dataType} is currently present. Please create a new field.</p>
+                                                </template>
+                                                <template if:true={invMap.referenceObjName}>
+                                                    <p class="errortxt">No field of type {invMap.dataType} is currently present for "{invMap.referenceObjName}". Please create a new field.</p>
+                                                </template>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <template if:true={showInvBt}>
+                        <br/>
+                        <div class="slds-align_absolute-center">
+                            <lightning-button variant="destructive" label="Cancel" name="invCancel" title="Cancel" onclick={handleClick}></lightning-button>
+                            <lightning-button variant="brand" label="Save" name="invSave" title="Save" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            <!-- Invoice Object ends here -->
+            <br/>
+            <!-- Invoice Line Item Object starts here -->
+            <div style="border: groove;border-radius: 20px;padding: 1%;background: gainsboro;">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col" style="text-align: center; width: 30%;">Invoice LineItem Object</div>
+                    <div class="slds-col" style="width: 30%;"><lightning-button-icon icon-name={invLIMappingIcon} alternative-text="right" title="right" name="InvoiceLIObj" onclick={handleFieldMapping} disabled={invLIObjMappingDisable}></lightning-button-icon></div>
+                    <div class="slds-col" style="width: 40%;">
+                        <c-custom-lookup-lwc
+                            field-name="field1"
+                            parent-object={invobjectAPI}
+                            is-required=true
+                            onobjectselected={handleInvLIObjectSelected}
+                            onobjclear={clearInvLIObj}
+                            selected-object-a-p-i-name={invLiObjectAPI}
+                            is-object-selection-r-o={disableInvLI}>
+                        </c-custom-lookup-lwc>
+                    </div>
+                </div>
+                <template if:true={showINVLIFieldMapping}>
+                    <br/>
+                    <div style="background-color: white;">
+                        <table>
+                            <thead style="background: #a1cfe1;">
+                                <tr>
+                                    <th>
+                                        Xero Fields
+                                    </th>
+                                    <th>
+                                        Salesforce Object Fields&nbsp;&nbsp;<lightning-button-icon size="x-small" name="Invoice LineItem Obj" icon-name="utility:refresh"  variant="border-filled" alternative-text="Referesh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={invLIMapping} for:item="invLIMap">
+                                    <tr key={invLIMap.id}>
+                                        <td>{invLIMap.fieldValue}</td>
+                                        <td>
+                                            <template if:true={invLIMap.fieldOption}>
+                                                <lightning-combobox
+                                                    name="Invoice LI field"
+                                                    label="field"
+                                                    variant="label-hidden"
+                                                    data-id={invLIMap.id}
+                                                    value={invLIMap.fieldApiName}
+                                                    placeholder="Select field"
+                                                    options={invLIMap.fieldOption}
+                                                    onchange={handleInvFieldChange} ></lightning-combobox>
+                                            </template>
+                                            <template if:false={invLIMap.fieldOption}>
+                                                <template if:false={invLIMap.referenceObjName}>
+                                                    <p class="errortxt">No field of type {invLIMap.dataType} is currently present. Please create a new field.</p>
+                                                </template>
+                                                <template if:true={invLIMap.referenceObjName}>
+                                                    <p class="errortxt">No field of type {invLIMap.dataType} is currently present for "{invLIMap.referenceObjName}". Please create a new field.</p>
+                                                </template>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <template if:true={showInvBt}>
+                        <br/>
+                        <div class="slds-align_absolute-center">
+                            <lightning-button variant="destructive" label="Cancel" name="invLICancel" title="Cancel" onclick={handleClick}></lightning-button>
+                            <lightning-button variant="brand" label="Save" name="invLISave" title="Save" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            <!-- Invoice Line Item Object ends here -->
+            <br/>
+            <!-- Invoice Payment Object starts here -->
+            <div style="border: groove;border-radius: 20px;padding: 1%;background: gainsboro;">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col" style="text-align: center; width: 30%;">Invoice Payment Object</div>
+                    <div class="slds-col" style="width: 30%;"><lightning-button-icon icon-name={invPayMappingIcon} alternative-text="right" title="right" name="InvoicePayObj" onclick={handleFieldMapping} disabled={invPayObjMappingDisable}></lightning-button-icon></div>
+                    <div class="slds-col" style="width: 40%;">
+                        <c-custom-lookup-lwc
+                            is-required=true
+                            onobjectselected={handleInvPayObjectSelected}
+                            onobjclear={clearInvPayObj}
+                            selected-object-a-p-i-name={invPayObjectAPI}
+                            is-object-selection-r-o={disableInvPay}>
+                        </c-custom-lookup-lwc>
+                    </div>
+                </div>
+                <template if:true={showINVPayFieldMapping}>
+                    <br/>
+                    <div style="background-color: white;">
+                        <table>
+                            <thead style="background: #a1cfe1;">
+                                <tr>
+                                    <th>
+                                        Xero Fields
+                                    </th>
+                                    <th>
+                                        Salesforce Object Fields&nbsp;&nbsp;<lightning-button-icon size="x-small" name="Invoice Payment Obj" icon-name="utility:refresh"  variant="border-filled" alternative-text="Referesh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={invPayMapping} for:item="invPayMap">
+                                    <tr key={invPayMap.id}>
+                                        <td>{invPayMap.fieldValue}</td>
+                                        <td>
+                                            <lightning-combobox
+                                                name="Invoice Pay field"
+                                                label="field"
+                                                variant="label-hidden"
+                                                data-id={invPayMap.id}
+                                                value={invPayMap.fieldApiName}
+                                                placeholder="Select field"
+                                                options={invPayMap.fieldOption}
+                                                onchange={handleInvFieldChange} ></lightning-combobox>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <template if:true={showPayBt}>
+                        <br/>
+                        <div class="slds-align_absolute-center">
+                            <lightning-button variant="destructive" label="Cancel" name="invPayCancel" title="Cancel" onclick={handleClick}></lightning-button>
+                            <lightning-button variant="brand" label="Save" name="invPaySave" title="Save" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            <!-- Invoice Payment Object ends here -->
+        </div>
+        <br/>
+        <div class="border">
+            <!-- Bill Object starts here -->
+            <div style="border: groove;border-radius: 20px;padding: 1%;background: gainsboro;">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col" style="text-align: center; width: 30%;">Bill Object</div>
+                    <div class="slds-col" style="width: 30%;"><lightning-button-icon icon-name={BillMappingIcon} alternative-text="right" title="right" name="BillObj" onclick={handleFieldMapping} disabled={billObjMappingDisable}></lightning-button-icon></div>
+                    <div class="slds-col" style="width: 40%;">
+                        <c-custom-lookup-lwc
+                            is-required=true
+                            onobjectselected={handleBillObjectSelected}
+                            onobjclear={clearBillObj}
+                            selected-object-a-p-i-name={billObjectAPI}
+                            is-object-selection-r-o={isObjectSelectionRO}>
+                        </c-custom-lookup-lwc>
+                    </div>
+                </div>
+                <template if:true={showBillFieldMapping}>
+                    <br/>
+                    <div style="background-color: white;">
+                        <table>
+                            <thead style="background: #a1cfe1;">
+                                <tr>
+                                    <th>
+                                        Xero Fields
+                                    </th>
+                                    <th>
+                                        Salesforce Object Fields&nbsp;&nbsp;<lightning-button-icon size="x-small" name="Bill Obj" icon-name="utility:refresh"  variant="border-filled" alternative-text="Referesh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={billMapping} for:item="billMap">
+                                    <tr key={billMap.id}>
+                                        <td>{billMap.fieldValue}</td>
+                                        <td>
+                                            <lightning-combobox
+                                                name="Bill field"
+                                                label="field"
+                                                variant="label-hidden"
+                                                data-id={billMap.id}
+                                                value={billMap.fieldApiName}
+                                                placeholder="Select field"
+                                                options={billMap.fieldOption}
+                                                onchange={handleInvFieldChange} ></lightning-combobox>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <template if:true={showBillBt}>
+                        <br/>
+                        <div class="slds-align_absolute-center">
+                            <lightning-button variant="destructive" label="Cancel" name="billCancel" title="Cancel" onclick={handleClick}></lightning-button>
+                            <lightning-button variant="brand" label="Save" name="billSave" title="Save" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            <!-- Bill Object ends here -->
+            <br/>
+            <!-- Bill Line Item Object starts here -->
+            <div style="border: groove;border-radius: 20px;padding: 1%;background: gainsboro;">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col" style="text-align: center; width: 30%;">Bill Line Item Object</div>
+                    <div class="slds-col" style="width: 30%;"><lightning-button-icon icon-name={BillLiMappingIcon} alternative-text="right" title="right" name="BillLiObj" onclick={handleFieldMapping} disabled={billLiObjMappingDisable}></lightning-button-icon></div>
+                    <div class="slds-col" style="width: 40%;">
+                        <c-custom-lookup-lwc
+                            is-required=true
+                            onobjectselected={handleBillLiObjectSelected}
+                            onobjclear={clearBillLiObj}
+                            selected-object-a-p-i-name={billLiObjectAPI}
+                            is-object-selection-r-o={disableBillLI}>
+                        </c-custom-lookup-lwc>
+                    </div>
+                </div>
+                <template if:true={showBillLiFieldMapping}>
+                    <br/>
+                    <div style="background-color: white;">
+                        <table>
+                            <thead style="background: #a1cfe1;">
+                                <tr>
+                                    <th>
+                                        Xero Fields
+                                    </th>
+                                    <th>
+                                        Salesforce Object Fields&nbsp;&nbsp;<lightning-button-icon size="x-small" name="Bill line Item Obj" icon-name="utility:refresh"  variant="border-filled" alternative-text="Referesh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={billLiMapping} for:item="billLiMap">
+                                    <tr key={billLiMap.id}>
+                                        <td>{billLiMap.fieldValue}</td>
+                                        <td>
+                                            <lightning-combobox
+                                                name="Bill LineItem field"
+                                                label="field"
+                                                variant="label-hidden"
+                                                data-id={billLiMap.id}
+                                                value={billLiMap.fieldApiName}
+                                                placeholder="Select field"
+                                                options={billLiMap.fieldOption}
+                                                onchange={handleInvFieldChange} ></lightning-combobox>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <template if:true={showBillLiBt}>
+                        <br/>
+                        <div class="slds-align_absolute-center">
+                            <lightning-button variant="destructive" label="Cancel" name="billLiCancel" title="Cancel" onclick={handleClick}></lightning-button>
+                            <lightning-button variant="brand" label="Save" name="billLiSave" title="Save" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            <!-- Bill Line Item Object ends here -->
+            <br/>
+            <!-- Bill Payment Object starts here -->
+            <div style="border: groove;border-radius: 20px;padding: 1%;background: gainsboro;">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col" style="text-align: center; width: 30%;">Bill Payment Object</div>
+                    <div class="slds-col" style="width: 30%;"><lightning-button-icon icon-name={BillPayMappingIcon} alternative-text="right" title="right" name="BillPayObj" onclick={handleFieldMapping} disabled={billPayObjMappingDisable}></lightning-button-icon></div>
+                    <div class="slds-col" style="width: 40%;">
+                        <c-custom-lookup-lwc
+                            is-required=true
+                            onobjectselected={handleBillPayObjectSelected}
+                            onobjclear={clearBillPayObj}
+                            selected-object-a-p-i-name={billPayObjectAPI}
+                            is-object-selection-r-o={disableBillPay}>
+                        </c-custom-lookup-lwc>
+                    </div>
+                </div>
+                <template if:true={showBillPayFieldMapping}>
+                    <br/>
+                    <div style="background-color: white;">
+                        <table>
+                            <thead style="background: #a1cfe1;">
+                                <tr>
+                                    <th>
+                                        Xero Fields
+                                    </th>
+                                    <th>
+                                        Salesforce Object Fields&nbsp;&nbsp;<lightning-button-icon size="x-small" name="Bill Payment Obj" icon-name="utility:refresh"  variant="border-filled" alternative-text="Referesh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={billPayMapping} for:item="billPayMap">
+                                    <tr key={billPayMap.id}>
+                                        <td>{billPayMap.fieldValue}</td>
+                                        <td>
+                                            <lightning-combobox
+                                                name="Bill Payment field"
+                                                label="field"
+                                                variant="label-hidden"
+                                                data-id={billPayMap.id}
+                                                value={billPayMap.fieldApiName}
+                                                placeholder="Select field"
+                                                options={billPayMap.fieldOption}
+                                                onchange={handleInvFieldChange} ></lightning-combobox>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <template if:true={showBillPayBt}>
+                        <br/>
+                        <div class="slds-align_absolute-center">
+                            <lightning-button variant="destructive" label="Cancel" name="billPayCancel" title="Cancel" onclick={handleClick}></lightning-button>
+                            <lightning-button variant="brand" label="Save" name="billPaySave" title="Save" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            <!-- Bill Payment Object ends here -->
+        </div>
+    </div>
+</template>

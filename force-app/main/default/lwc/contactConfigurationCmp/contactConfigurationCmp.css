@@ -1,0 +1,15 @@
+.invoiceConfig .slds-card__header.slds-grid {
+    border-bottom: 3px solid #00A1E0;
+    box-shadow: 3px 0px 3px #00a1e0;
+    padding: 18px;
+}
+td{
+    /* height: 50px; */
+    padding: 7px;
+}
+
+th{
+    width: 50%;
+    height: 50px;
+    padding: 7px;
+}

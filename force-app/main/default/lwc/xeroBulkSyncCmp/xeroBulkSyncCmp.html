@@ -1,0 +1,345 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={showLoading}>
+        <article class="slds-card invoiceConfig">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <lightning-icon icon-name="utility:download" alternative-text="Event" title="Event">
+                    </lightning-icon>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title slds-m-left_small">
+                            <a href="#" class="slds-card__header-link slds-truncate" title="Xero Bulk Sync">
+                                <span>Xero Bulk Sync</span>
+                            </a>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            
+            <div class="container">
+                <template if:true={isInProgress}>
+                    <!--<div class="page">
+    
+                        <div class="folder">
+                            <span class="folder-tab"></span>
+                            <div class="folder-icn">
+                                <div class="downloading">
+                                <span class="custom-arrow"></span>
+                                </div>
+                                <div class="bar"></div>
+                            </div>
+                        </div>
+                    </div>-->
+
+                    <div style=" padding-bottom: 8px; " class="slds-grid slds-gutters">
+                        
+                        <div class="slds-col" style="text-align:right">
+                            <lightning-button  variant="brand" label="Refresh"
+                                title="Refresh" 
+                                class="slds-m-left_x-small" name="RefSection" style="padding-right: 1rem;"
+                                onclick={handleRefresh}
+                                ></lightning-button>
+                        </div>
+
+                    </div>
+                    <div style="padding:100px">
+                        <div class="slds-align_absolute-center">
+                            <img class="img-cls" style="width:20%;" alt="Processing Invoice" src={invoiceLoading}>
+                        </div>
+                        <div class="slds-text-longform slds-align_absolute-center" style="color: #74706f;">
+                            <!-- <h3 class="slds-text-heading_large" style="font-size: xx-large;">Processing Invoices...</h3> -->
+                            <p class="slds-text-heading_large saving" style="font-size: xx-large;">Processing Invoices<span>.</span><span>.</span><span>.</span></p>
+                        </div>
+                        <div class="slds-text-longform slds-align_absolute-center" style="color: #74706f;">
+                            <h3 class="slds-text-heading_small" >Bulk sync is already in progress. You will be notified via email once the job is completed.</h3>
+                        </div>
+
+                    </div>
+                </template>
+                <template if:false={isInProgress}>
+
+                    <div class="plans">
+                        <div class="title">Sync Bulk Xero Invoices to salesforce from xero </div>
+                        <label class="plan basic-plan" for="all">
+                            <input type="radio" name="sync" id="all" value="all" onchange={onhandleChange}/>
+                            <div class="plan-content">
+                                <img src="data:image/png;base64,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" alt="Sync all">
+                                <div class="plan-details">
+                                    <span>Sync All</span>
+                                    <p>Sync all Invoices from Xero.</p>
+                                </div>
+                            </div>
+                        </label>
+                
+                        <label class="plan complete-plan" for="filters">
+                            <input type="radio" name="sync" id="filters" value="filters" onchange={onhandleChange}/>
+                            <div class="plan-content">
+                                <img alt="Sync with filters" src="data:image/png;base64,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">
+                                <div class="plan-details">
+                                    <span>Sync with filters</span>
+                                    <p>Sync filtered invoices using below filters.</p>
+                                </div>
+                            </div>
+                    </label>
+                    </div>
+                    <!-- Filters Screen Start -->
+                    <template if:true={showfilters}>
+                        <div style="padding: 0px 50px;">
+                            <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">Filters</div>
+        
+                            <table style="width: 100%;">
+                                <thead></thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <lightning-input type="checkbox-button" label="Status" name="status" onchange={handleCheckBoxChange}></lightning-input>
+                                        </td>
+                                        <td>
+                                            <span style="font-size: large;"> Invoice Status </span>
+                                        </td>
+                                        <td>
+                                            <lightning-combobox
+                                                name="Operator"
+                                                label="Operators"
+                                                value={operatorVal}
+                                                placeholder="Select Operator"
+                                                options={options}
+                                                variant="label-hidden"
+                                                disabled={statusDisable}
+                                                onchange={opthandleChange} required></lightning-combobox>
+                                        </td>
+                                        <td>
+                                            <div class="slds-p-raound_xx-small">
+                                                <lightning-combobox name="Status" label="Status" disabled={statusDisable} placeholder="Select Status" variant="label-hidden" value={statusValue} options={StatusOpts} onchange={handleChange}></lightning-combobox>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td style="max-width: 10px;">
+                                            <div class="slds-p-raound_xx-small">
+                                                <template for:each={allValues} for:item="val">
+                                                    <lightning-pill key={val} name={val} label={val} onremove={handleRemove}></lightning-pill>&nbsp;&nbsp;
+                                                </template>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <lightning-input type="checkbox-button" label="Invoice Date" name="Invoice Date" onchange={handleCheckBoxChange}></lightning-input>
+                                        </td>
+                                        <td>
+                                            <span style="font-size: large;"> Invoice Date </span>
+                                        </td>
+                                        <td>
+                                            <span>Start Date </span>
+                                            <lightning-input type="date" value={startDate} name="Start Date" label="Enter a date" variant="label-hidden" disabled={dateDisable} onchange={handleDateChange}></lightning-input>
+                                        </td>
+                                        <td>
+                                            <span>End Date </span>
+                                            <lightning-input type="date" value={endDate} name="End Date" label="Enter a date" variant="label-hidden" disabled={dateDisable} onchange={handleDateChange}></lightning-input>
+                                        </td>
+                                    </tr>
+                                    <!-- <template if:false={statusDisable}>
+                                        <template if:false={dateDisable}>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span style="font-size: large;">
+                                                        Filter Logic:
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span style="font-size:large;"> Invoice Status</span>
+                                                </td>
+                                                <td>
+                                                    <lightning-combobox
+                                                        name="conditions"
+                                                        label="conditions"
+                                                        variant="label-hidden"
+                                                        value={fltLogicVal}
+                                                        placeholder="Select conditions"
+                                                        options={filterlogicOption}
+                                                        onchange={handleConditionChange} ></lightning-combobox>
+                                                </td>
+                                                <td>
+                                                    <span style="font-size:large;">
+                                                        Invoice Date
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </template> -->
+                                </tbody>
+                            </table>
+                            <br>
+                        </div>
+                        <br/>
+                    </template>
+                    <!-- Filters Screen End -->
+        
+                    <!-- Sync setting start -->
+                    <template if:true={showSyncSetting}>
+                        <div style="padding: 0px 50px;">
+                            <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">Sync Settings</div>
+                    
+                            <table>
+                                <thead></thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 50%;font-size: medium;">
+                                            <span>Do you want to create/link salesforce product with xero item during the Bulk Sync Process?</span>
+                                        </td>
+                                        <td style="width: 50%;">
+                                            <lightning-radio-group name="linkProd"
+                                            label="linkXC"
+                                            options={linkProdOptions}
+                                            value={linkProd}
+                                            variant="label-hidden"
+                                            onchange={linkXCChange}
+                                            type="button"></lightning-radio-group>
+                                        </td>
+                                    </tr>
+                                    <template if:true={showFirstOpt}>
+                                        <tr>
+                                            <td style="width: 50%;font-size: medium;">
+                                                <span>Do you want to link Xero Contact while syncing Invoice in Salesforce?</span>
+                                            </td>
+                                            <td style="width: 50%;">
+                                                <lightning-radio-group name="linkXC"
+                                                label="linkXC"
+                                                options={linkXCOptions}
+                                                value={linkXC}
+                                                variant="label-hidden"
+                                                onchange={linkXCChange}
+                                                type="button"></lightning-radio-group>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template if:true={showlinkXCOpt}>
+                                        <tr>
+                                            <td style="width: 50%;font-size: medium;">
+                                                <span>System will find Xero Contact in salesforce using Xero Contact Id. If Xero Contact not found, do you want to create a new Xero Contact?</span>
+                                            </td>
+                                            <td style="width: 50%;">
+                                                <lightning-radio-group name="createXC"
+                                                label="linkXC"
+                                                options={linkXCOptions}
+                                                value={createXC}
+                                                variant="label-hidden"
+                                                onchange={linkXCChange}
+                                                type="button"></lightning-radio-group>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template if:true={showAccOpt}>
+                                        <tr>
+                                            <td style="width: 50%;font-size: medium;">
+                                                <span>After Xero Contact is created in salesforce, do you want to map Salesforce Account with it?</span>
+                                            </td>
+                                            <td style="width: 50%;">
+                                                <lightning-radio-group name="attchAcc"
+                                                label="attchAcc"
+                                                options={linkXCOptions}
+                                                value={attchAcc}
+                                                variant="label-hidden"
+                                                onchange={linkXCChange}
+                                                type="button"></lightning-radio-group>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template if:true={accMappingOpt}>
+                                        <tr>
+                                            <td style="width: 50%;font-size: medium;">
+                                                Provide Account field mappings to match and map the account to Xero Contact.&nbsp;
+                                                <lightning-helptext content="The process will attempt to search the account with the mapped field using the value from the Xero contact. You may provide one or more mappings. In the event of multiple mappings, the process will search and map account in the following order: Xero Contact Company Name, Xero Contact Account Number, and Xero Contact Primary Person Email."></lightning-helptext>
+                                            </td>
+                                            <td style="width: 50%;">
+                                                <table>
+                                                    <thead></thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <lightning-input type="checkbox-button" label="Company Name" name="CompanyName" onchange={handleCheckBoxChange}></lightning-input>
+                                                            </td>
+                                                            <td>
+                                                                <lightning-combobox name="Company Name" label="Xero Contact Company Name" placeholder="Map Company Name"
+                                                                value={companyName} disabled={disableCompanyName} options={acctextFieldOptions} onchange={handlemapfieldChange}>
+                                                                </lightning-combobox>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <lightning-input type="checkbox-button" label="Account Number" name="AccountNumber" onchange={handleCheckBoxChange}></lightning-input>
+                                                            </td>
+                                                            <td>
+                                                                <lightning-combobox name="Account Number" label="Xero Contact Account Number" placeholder="Map Account Number"
+                                                                value={accNumber} disabled={disableAccountNumber} options={acctextFieldOptions} onchange={handlemapfieldChange}>
+                                                                </lightning-combobox>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <lightning-input type="checkbox-button" label="Person Email" name="PersonEmail" onchange={handleCheckBoxChange}></lightning-input>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-grid slds-gutters">
+                                                                    <div class="slds-col" style="width: 50%;">
+                                                                        <lightning-combobox name="Objects" label="Related to" placeholder="Select Object" value={objValue}
+                                                                        options={objOption} disabled={disablePersonEmail} onchange={handleObjOptionChange}>
+                                                                        </lightning-combobox>
+                                                                    </div>
+                                                                    <div class="slds-col" style="width: 50%;">
+                                                                        <lightning-combobox name="Person Email" label="Xero Contact Primary Person Email" placeholder="Map Email field"
+                                                                        value={personEmail} disabled={disablePersonEmail} options={emailFieldOptions} onchange={handlemapfieldChange}>
+                                                                        </lightning-combobox>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <br/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 50%;font-size: medium;">
+                                                Do you wish to create a new Salesforce Account if no matching Salesforce account has been found using the given mapping?&nbsp;
+                                                <lightning-helptext content="An account will be created with the same name as the firm name in Xero Contact. Account creation will not be completed if any other required fields are defined on account."></lightning-helptext>
+                                            </td>
+                                            <td style="width: 50%;">
+                                                <lightning-radio-group name="createAcc"
+                                                label="createAcc"
+                                                options={linkXCOptions}
+                                                value={createAcc}
+                                                variant="label-hidden"
+                                                onchange={linkXCChange}
+                                                type="button"></lightning-radio-group>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                            <!-- Sync setting end -->
+                            <br/>
+                            <div class="slds-align_absolute-center">
+                                <lightning-button label="Sync" title="Sync" icon-name="utility:sync" class="slds-m-left_x-small" onclick={syncClick}></lightning-button>
+                            </div>
+                            <br/>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            
+        </article>
+    </template>
+</template>

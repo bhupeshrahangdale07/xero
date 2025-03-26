@@ -1,0 +1,49 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner variant="brand" size="medium"></lightning-spinner>
+    </template>
+    <div class="slds-section slds-is-open">
+        <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Opportunity</span>
+        </h3>
+        <div aria-hidden="false" class="slds-section__content">
+            <lightning-record-view-form object-api-name="Opportunity" record-id={recordId}>
+                <h2><b>Name: </b></h2>
+                <lightning-output-field field-name="Name" variant="label-hidden"> </lightning-output-field>
+                <br/>
+                <h2><b>Account: </b></h2>
+                <lightning-output-field field-name="AccountId" variant="label-hidden"> </lightning-output-field>
+            </lightning-record-view-form>
+        </div>
+    </div>
+    <br/>
+    <template if:true={invoicesList}>
+        <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Existing invoice(s) on this Opportunity</span>
+            </h3>
+            <br/>
+            <ul class="slds-list_dotted">
+                <div class="slds-grid slds-wrap">
+                <template for:each={invoicesList} for:item="inv">
+                        <div key={inv.invoiceId} class="slds-col slds-size_1-of-3">
+                            <li style="font-size: larger;"><a href={inv.URL} target="_blank"> {inv.name} </a></li>
+                        </div>
+                    </template>
+                </div>
+            </ul>
+        </div>
+    </template>
+    <div class="slds-section slds-is-open">
+        <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Create invoice using opportunity products</span>
+        </h3>
+        <br/>
+        <div class="radioclass">
+            <input type="radio" data-id="blank" name="radioGroup" value="blank" onchange={onhandleChange}>
+            <label for="html"> Create Blank Invoice</label><br>
+            <input type="radio" data-id="prepopulate" name="radioGroup" value="prepopulate" onchange={onhandleChange}>
+            <label for="html"> Populate Invoice with Opportunity Products</label><br>
+        </div>
+    </div>
+</template>

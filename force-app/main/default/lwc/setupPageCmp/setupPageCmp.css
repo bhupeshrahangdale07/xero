@@ -1,0 +1,51 @@
+.logo{
+    color: #00B1D4;
+    /* display: grid; */
+    text-align: center;
+    font-size: 15px
+}
+.slds-card__header.slds-grid {
+    display: none;
+}
+.leftNavigation{    
+        width: 18%;
+        box-shadow: 3px 0px 3px #00A1E0;
+        margin: 0px;
+        margin-left: -3px !important;
+        margin-top: -25px;
+        margin-bottom: -12px;
+}
+
+.rightNavigation{    
+    width: 85%;
+    padding: 0px 0px 0px 4px;
+    margin-top: -24px;
+}
+
+@media only screen and (max-height: 1200px) and (min-height: 900px){
+    .rightNavigation{
+        min-height: 820px;
+        max-height: 820px;
+        overflow-y: auto;
+    }
+}
+
+@media only screen and (max-height: 900px) and (min-height: 500px){
+    .rightNavigation{
+        min-height: 610px;
+        max-height: 610px;
+        overflow-y: auto;
+    }
+}
+
+.slds-card__header.slds-grid {
+    padding: 0px;
+    margin: 0px;
+}
+lightning-layout.slds-grid.slds-gutters{
+    margin-top: -10px;
+    margin-bottom: 0px;
+}
+.lightningCard .slds-card__header.slds-grid {
+    display: none;
+}

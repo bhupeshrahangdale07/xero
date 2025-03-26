@@ -1,0 +1,12 @@
+<apex:page controller="XeroOAuthPageController">
+    <apex:form >
+        <apex:actionFunction name="fetchToken" action="{!fetchAccessToken}"/>
+    </apex:form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchToken();
+        }, false);
+
+    </script>
+</apex:page>

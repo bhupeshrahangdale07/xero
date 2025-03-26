@@ -1,0 +1,221 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <div class="slds-section slds-is-open">
+        <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Reset Connections</span>
+        </h3>
+        <br/>
+        <p>Please provide necessary details in case of resetting connection between salesforce and Xero. </p>
+        <ol class="slds-setup-assistant">
+            <!-- Authentication setup start || 1st step -->
+            <li class="slds-setup-assistant__item">
+                <article class="slds-setup-assistant__step">
+                    <template if:true={showXeroConnection}>
+                        <div aria-hidden="false" class="slds-summary-detail__content" id="step-1-summary-action">
+                            <div class="slds-setup-assistant__step-detail">
+                                <div class="row">
+                                    <div class="column-left">
+                                        <ul class="progress-bar">
+                                            <li class="active" data-id="1">Enter Consumer Key and Secret</li>
+                                            <li class={two} data-id="2">Select Tenant</li>
+                                        </ul>
+                                    </div>
+                                    <div class="column-right">
+                                        <!-- First tab Start -->
+                                        <template if:true={tabs.oneActive}>
+                                            <p class="stepTitle"><b>Xero Account Connection</b></p>
+                                            <p>To connect your Salesforce Org account and Xero account, please input the Xero Consumer Key below. Please click the "Show Instructions" button below to view the directions for getting this.</p>
+                                            <br/>
+                                            <div>
+                                                <lightning-input name="Consumer Key" type="text" label="Enter consumer key" value={xeroConnection.clientId} onchange={updateValue} required></lightning-input>
+                                            </div>
+                                            <br/>
+                                            <div>
+                                                <lightning-input name="Consumer Secret" type="text" label="Enter consumer secret" value={xeroConnection.clientSecret} onchange={updateValue}  required></lightning-input>
+                                            </div>
+                                            <br/>
+                                            <div class="slds-align_absolute-center">
+                                                <lightning-button variant="brand" label="Show Instructions" title="Show Instructions" class="slds-m-right_x-small" onclick={showInstruction} icon-name="utility:preview"></lightning-button>
+                                                <template if:true={xeroConnection.authenticated}>
+                                                    <lightning-button variant="destructive-text" label="Reset" title="Reset" onclick={handleReset}></lightning-button>
+                                                </template>
+
+                                                <template if:true={showNext}>
+                                                    <lightning-button variant="brand-outline" label="Next" title="Next" value="1" class="slds-m-left_x-small" icon-name="utility:forward" onclick={goNext}></lightning-button>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        <!-- First tab End -->
+                                        <!-- Second tab start -->
+                                        <template if:true={tabs.twoActive}>
+                                            <p class="stepTitle"><b>Select Tenant</b></p>
+                                            <p>Fetch Tenant Data and Select related Tenant to Connect Salesforce</p>
+                                            <br/>
+                                            <lightning-combobox name="Tenant" label="Tenant" value={xeroConnection.tenantId} placeholder="Select Tenant" options={tenantOptions} onchange={handleTenantChange} ></lightning-combobox>
+                                            <br/>
+                                            
+                                            <div class="slds-align_absolute-center">
+                                                <template if:false={xeroConnection.authenticated}>
+                                                    <lightning-button variant="brand-outline" label="Back" title="Back" value="2" icon-name="utility:back" onclick={goBack}></lightning-button>
+                                                </template>
+                                                <lightning-button variant="brand" label="Save" title="Save" class="slds-m-left_x-small" onclick={saveTenant} enabled={xeroConnection.authenticated}></lightning-button>
+                                            </div>
+                                        </template>
+                                        <!-- Second tab End -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <!-- Modal Popup start -->
+                    <div>
+                        <c-modal-pop-up 
+                            show-modal={showModal} 
+                            show-positive={showPositiveButton}
+                            show-negative={showNegativeButton}
+                            positive-button-label={positiveButtonLabel}
+                            onpositive={closeModal}
+                            onclose={closeModal}>
+                            <div slot="header">
+                                <h2 slot="header" id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Instructions to get Consumer Key and Secret</h2>
+                            </div>
+                            <div slot="body">
+                                <ol class="slds-list_ordered">
+                                    <li>Navigate to <b><a href="https://developer.xero.com/myapps" target="_blank">Xero App</a></b>.</li>
+
+                                    <li>Click the "New App" button.</li>
+                                    <li>Enter relatable Name in App name.</li>
+                                    
+                                    <li>Select "Web app" in Integration type</li>
+                                    <li>Provide company or application URL.</li>
+                                    <li>Provide this redirect URL - <br/><b> {redirectURL} </b>.</li>
+                                    <li>Enter related website or URL in Company or application URL or you can keep it blank.</li>
+                                    <li>Read Terms &amp; Conditions and enable the checkbox.</li>
+                                    <li>Click on "Create app" button.</li>
+                                    <li>Select Configuration from the left side menubar.</li>
+                                    <li>Click on Generate Secret Key.</li>
+                                    <li>Copy client Id and secret and paste in Salesforce respectively.</li>
+                                </ol>                            
+                            </div>
+                        </c-modal-pop-up>
+                    </div>
+                    <!-- Modal Popup end -->
+                </article>
+            </li>
+            <!-- Authentication setup end || 1st step -->
+           
+        </ol>
+    </div>
+    <br/>
+    <template if:true={showWebhook}>
+        <template if:false={showWebhookSteps}>
+
+            <div class="slds-section slds-is-open">
+                
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Reset Webhook Connection </span>
+                </h3>
+                <br/>
+                <p>Please provide necessary details in case of resetting Xero webhook connection with Salesforce.  </p>
+
+            </div>
+            <div>
+                <lightning-input type="text" name ="Webhook Key" label="Webhook Key" value={xeroConnection.webhookKey} disabled={disableWebhookInput} onchange={updateValue}></lightning-input>
+            </div>
+            <br/>
+            <div class="slds-align_absolute-center">
+                <lightning-button variant="brand" label="Reset" title="Reset" class="slds-m-right_x-small" onclick={handleWebReset}></lightning-button>
+            </div>
+        </template>
+    </template>
+    <template if:true={showWebhookSteps}>
+        <div class="slds-section slds-is-open">
+            
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Reset Webhook Connection </span>
+            </h3>
+            <br/>
+
+            <p>Please provide necessary details in case of resetting Xero webhook connection with Salesforce.  </p>
+
+                <br/>
+                <template if:false={disableWebhookInput}>
+
+                    <ol class="slds-list_ordered">
+                        <template if:true={showSiteCreation}>
+                            <li>
+                                <p>
+                                    Select Site from below list to generate URL for your Webhook.
+                                </p>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <lightning-combobox name="Sites" label="Sites" value={siteVal}
+                                                    placeholder="Select Site" variant="label-hidden" options={siteOptions} onchange={fetchSecureURL} disabled={disableWebhookInput}>
+                                                </lightning-combobox>
+                                            </td>
+                                            <td style="padding: 7px;">
+                                                <lightning-button-icon name="Sites" icon-name="utility:refresh"  variant="brand" alternative-text="Refresh Sites" onclick={getAllSites}></lightning-button-icon>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </li>
+                            <li>
+                                <lightning-input type="text" label="Site Secure URL for Xero" value={siteSecureURL} disabled></lightning-input>
+                            </li>
+                            <li>Copy above URL and Navigate back to the Xero App Manager.</li>
+                            <li>Select relevant application and go to the Webhook Option.</li>
+                            <li>Select Invoices and Contact options and In Delivery URL field paste above copied link.</li>
+                            <li>
+                                <p>Click on Save. It will generate one Webhook key. Please paste that below.</p>
+                                <lightning-input type="text" name ="Webhook Key" label="Webhook Key" value={xeroConnection.webhookKey} disabled={disableWebhookInput} onchange={updateValue}></lightning-input>
+                            </li>
+                            <li>After enetering the Webhook key. Click on &nbsp;<lightning-button variant="brand" label="Save key" title="Save key" class="slds-m-right_x-small" onclick={handleWebhookSave}></lightning-button></li>
+                            <template if:true={disableWebhookSave}>
+                                <li>Go back to Xero App Manager and then to Webhook Setting.</li>
+                                <li>Under Status Section Click on "Send 'Intent to receive'" button.</li>
+                                <li>After few minutes Status will be changed to OK.</li>
+                                <li>Click on Save and Proceed with Further Steps.</li>
+                            </template>
+                        </template>
+                        <template if:false={showSiteCreation}>
+                            <li>
+                                <p>
+                                    Select Site from below list where you have Enabled Apex Class to generate URL for your Webhook.
+                                </p>
+                                <lightning-combobox name="Sites" label="Sites" value={siteVal}
+                                    placeholder="Select Site" variant="label-hidden" options={siteOptions} disabled={disableWebhookInput} onchange={fetchSecureURL}>
+                                </lightning-combobox>
+                            </li>
+                            <li>
+                                <lightning-input type="text" label="Site Secure URL for Xero" value={siteSecureURL} disabled></lightning-input>
+                            </li>
+                            <li>Copy above URL and Navigate back to the Xero App Manager.</li>
+                            <li>Select relevant application and go to the Webhook Option.</li>
+                            <li>Select Invoices and Contact options and In Delivery URL field paste above copied link.</li>
+                            <li>
+                                <p>Click on Save. It will generate one Webhook key. Please paste that below.</p>
+                                <lightning-input type="text" name ="Webhook Key" label="Webhook Key" value={xeroConnection.webhookKey} disabled={disableWebhookInput} onchange={updateValue}></lightning-input>
+                            </li>
+                            <li>After enetering the Webhook key. Click on &nbsp;<lightning-button variant="brand" label="Save key" title="Save key" class="slds-m-right_x-small" onclick={handleWebhookSave}></lightning-button></li>
+                            <template if:true={disableWebhookSave}>
+                                <li>Go back to Xero App Manager and then to Webhook Setting.</li>
+                                <li>Under Status Section Click on "Send 'Intent to receive'" button.</li>
+                                <li>After few minutes Status will be changed to OK.</li>
+                                <li>Click on Save and Proceed with Further Steps.</li>
+                            </template>
+                        </template>
+                    </ol> 
+                    <br/>
+                    <div class="slds-align_absolute-center">
+                        <lightning-button variant="brand" label="Save" title="Save" class="slds-m-right_x-small" onclick={webhookStepSave}></lightning-button>
+                    </div>
+                </template>
+        </div>
+    
+    </template>
+</template>

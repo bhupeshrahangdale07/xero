@@ -1,0 +1,16 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" access="global" >
+	<aura:attribute name="recordId" type="String" />
+    <aura:handler name="init" action="{!c.doInIt}" value="{!this}"/>
+ 	<c:invoiceMainCmp recId="{!v.recordId}"/>
+    
+</aura:component>
+
+
+    <!-- 
+<aura:component implements="force:appHostable,force:hasRecordId,lightning:isUrlAddressable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,lightning:actionOverride,lightning:hasPageReference" access="global">
+    
+	<aura:attribute name="recordId" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+ 	<c:invoiceMainCmp recId="{!v.recordId}"/>
+	</aura:component>
+     -->

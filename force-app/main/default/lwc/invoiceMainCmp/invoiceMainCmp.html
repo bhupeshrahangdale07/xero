@@ -1,0 +1,67 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={showLoading}>
+        <lightning-card>
+            <h1 slot="title">
+                <lightning-icon icon-name="action:quote" size="x-small"></lightning-icon>
+                &ensp;New Xero Invoice
+            </h1>
+            <div slot="footer">
+                <div class="slds-align_absolute-center">
+                    <lightning-button variant="brand-outline" label={cancelButtonLabel} title={cancelButtonLabel} onclick={CancelClick} class="slds-m-left_x-small" disabled={cancelDisable}></lightning-button>
+                    <template if:true={showContactButton}>
+                        <lightning-button variant="brand" label={nextButtonLabel} title={nextButtonLabel} onclick={nextClick} class="slds-m-left_x-small" disabled={nextDisable}></lightning-button>
+                    </template>
+                </div>
+            </div>
+            <div class="progress">
+                <c-invoice-progress-cmp progress-value={currentStep} is-opportunity-invoice={oppInv}></c-invoice-progress-cmp>
+            </div>
+            <br/>
+            <div class="main">
+                <template if:true={invoiceOppCmp}>
+                    <c-invoice-opp-cmp record-id={recId} invoice-option={invoiceOption} oninvoiceoption={handleinvoiceoptionChange} onaccountid={handleaccountId} onaccountname={handleaccountName}></c-invoice-opp-cmp>
+                </template>
+                <template if:true={invoiceContactCmp}>
+                    <c-invoice-contact-cmp record-id={recId} previous-acc-details={accountDetails} previous-con-details={contactDetails} previous-con-person-details={contactPersonDetails} account-id={accountId} account-name={accountName} contact-option={newContact} onsuccess={handleSuccess} oncontactoptionchange={handlecontactOption} oncontactselection={handlecontactSelection}  onaccountdetails={handleaccountdetails} oncontactdetails={handlecontactdetails} oncontactpersonsdetails={handleconpersondetails} ondisablebutton={disableButtons} onenablebutton={disableshowContact} onenabledbutton={handleenablebutton}></c-invoice-contact-cmp>
+                </template>
+                <template if:true={invoiceCmp}>
+                    <c-invoice-creation-cmp is-loaded={isLoaded} record-id={recId} contact-option-main={contactOptionMain} account-details={accountDetails} contact-details={contactDetails} line-item={lineitemOption} line-items-data={invoiceData} onerrormessagelist={handleErrorMessage} ondraftsave={handledraftSave} onapprovedsave={handleapprovedSave} oninvoicedata={handleinvoiceData} invoice-config={invoiceConfig} is-opportunity-invoice={oppInv}></c-invoice-creation-cmp>
+                </template>
+            </div>
+            <div>
+                <c-modal-pop-up 
+                    show-modal={showModal} 
+                    show-positive={showPositiveButton}
+                    positive-button-label={positiveButtonLabel}
+                    negative-button-label={negativeButtonLabel}
+                    show-negative={showNegativeButton}
+                    onpositive={saveModal}
+                    onnegative={closeModal}
+                    onclose={closeModal}>
+                    <div slot="header">
+                        <h2 slot="header" id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Invoice Creation Option</h2>
+                    </div>
+                    <div slot="body">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col" style="text-align: end;font-weight: bold;">
+                              <span>Invoice Creation Options: </span>
+                            </div>
+                            <div class="slds-col">
+                                <lightning-radio-group 
+                                      name="Invoice Creation"
+                                      label="Invoice Creation"
+                                      options={invcreationOptions}
+                                      value={invCreation}
+                                      variant="label-hidden"
+                                      type="radio" onchange={invCreationhandleChange}></lightning-radio-group>
+                            </div>
+                        </div>
+                    </div>
+                </c-modal-pop-up>
+            </div>
+        </lightning-card>
+    </template>
+</template>

@@ -1,0 +1,23 @@
+tr{
+    border: groove;
+}
+
+td{
+    padding: 1%;
+}
+
+td, th {
+    padding: 1%;
+    width: 50%;
+    text-align: center !important;
+}
+
+.errortxt{
+    color: red;
+}
+
+.border{
+    border: groove;
+    border-radius: 20px;
+    padding: 10px;
+}
