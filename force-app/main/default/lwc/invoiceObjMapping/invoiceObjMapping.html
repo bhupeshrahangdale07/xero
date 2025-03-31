@@ -164,6 +164,7 @@
                         <c-custom-lookup-lwc
                             field-name="field1"
                             parent-object={invobjectAPI}
+                            option-to-hide-inv={invPayObjectAPI}
                             is-required=true
                             onobjectselected={handleInvLIObjectSelected}
                             onobjclear={clearInvLIObj}
@@ -234,6 +235,9 @@
                     <div class="slds-col" style="width: 30%;"><lightning-button-icon icon-name={invPayMappingIcon} alternative-text="right" title="right" name="InvoicePayObj" onclick={handleFieldMapping} disabled={invPayObjMappingDisable}></lightning-button-icon></div>
                     <div class="slds-col" style="width: 40%;">
                         <c-custom-lookup-lwc
+                            field-name="field2"
+                            parent-object={invobjectAPI}
+                            option-to-hide-inv={invLiObjectAPI}
                             is-required=true
                             onobjectselected={handleInvPayObjectSelected}
                             onobjclear={clearInvPayObj}
@@ -357,6 +361,9 @@
                     <div class="slds-col" style="width: 40%;">
                         <c-custom-lookup-lwc
                             is-required=true
+                            field-name="field3"
+                            parent-object-bill={billObjectAPI}
+                            option-to-hide-bill={billPayObjectAPI}
                             onobjectselected={handleBillLiObjectSelected}
                             onobjclear={clearBillLiObj}
                             selected-object-a-p-i-name={billLiObjectAPI}
@@ -417,6 +424,9 @@
                     <div class="slds-col" style="width: 40%;">
                         <c-custom-lookup-lwc
                             is-required=true
+                            field-name="field4"
+                            parent-object-bill={billObjectAPI}
+                            option-to-hide-bill={billLiObjectAPI}
                             onobjectselected={handleBillPayObjectSelected}
                             onobjclear={clearBillPayObj}
                             selected-object-a-p-i-name={billPayObjectAPI}

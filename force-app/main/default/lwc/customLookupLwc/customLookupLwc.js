@@ -17,7 +17,10 @@ export default class CustomLookupLwc extends LightningElement {
     @api isObjectSelectionRO = false;
     @api isRequired = false;
     @api parentObject;
+    @api parentObjectBill;
     @api fieldName;
+    @api optionToHideInv;
+    @api optionToHideBill;
 
     @api validate() {
         // to be called from parent LWC if for example the search box is present
@@ -50,45 +53,64 @@ export default class CustomLookupLwc extends LightningElement {
      * Handlers
      */
     async handleInputChange(event) {
-        console.log('Input change for- '+this.parentObject);
-       
         this.selectedObjectAPIName = ''; // resets the selected object whenever the search box is changed
         const inputVal = event.target.value; // gets search input value
-        console.log('inputVal-->',inputVal);
+        console.log('inputVal-->', inputVal);
+        console.log('this.fieldName-->',this.fieldName);
 
-        if(inputVal){
-            if(this.fieldName == 'field1' && this.parentObject != undefined){
+        if (inputVal) {
+            if ((this.fieldName == 'field1' || this.fieldName == 'field2') && this.parentObject != undefined) {
 
-           await getChildObjects({
-            objectApiName: this.parentObject
-            })
-            .then((result) => {
-                console.log('Result- '+JSON.stringify(result));
-                this.objectsMapOfChild = JSON.parse(JSON.stringify(result));
-                this.objectsListOfChild = Object.values(this.objectsMapOfChild);
-                //console.log('fields of +selectedObj+ '+result);
-                }).catch((error) => {
-            console.log(error);
-            })
-            this.autoCompleteOptions = this.objectsListOfChild.filter(item => item.reference.toLowerCase().includes(inputVal.toLowerCase()));
-    
-            // makes visible the combobox, expanding it.
-            if (this.autoCompleteOptions.length && inputVal) {
-                this.template.querySelector('.slds-combobox.slds-dropdown-trigger.slds-dropdown-trigger_click')?.classList.add('slds-is-open');
-                this.template.querySelector('.slds-combobox.slds-dropdown-trigger.slds-dropdown-trigger_click')?.focus();
+                await getChildObjects({
+                    objectApiName: this.parentObject
+                })
+                    .then((result) => {
+                        console.log('Result- ' + JSON.stringify(result));
+                        this.objectsMapOfChild = JSON.parse(JSON.stringify(result));
+                        this.objectsListOfChild = Object.values(this.objectsMapOfChild);
+                        //console.log('fields of +selectedObj+ '+result);
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                this.autoCompleteOptions = this.objectsListOfChild.filter(item => item.name !== this.optionToHideInv && item.reference.toLowerCase().includes(inputVal.toLowerCase()));
+                // makes visible the combobox, expanding it.
+                if (this.autoCompleteOptions.length && inputVal) {
+                    this.template.querySelector('.slds-combobox.slds-dropdown-trigger.slds-dropdown-trigger_click')?.classList.add('slds-is-open');
+                    this.template.querySelector('.slds-combobox.slds-dropdown-trigger.slds-dropdown-trigger_click')?.focus();
+                }
+
+            } else if((this.fieldName == 'field3' || this.fieldName == 'field4') && this.parentObjectBill != undefined){
+
+                await getChildObjects({
+                    objectApiName: this.parentObjectBill
+                })
+                    .then((result) => {
+                        console.log('Result- ' + JSON.stringify(result));
+                        this.objectsMapOfChild = JSON.parse(JSON.stringify(result));
+                        this.objectsListOfChild = Object.values(this.objectsMapOfChild);
+                        //console.log('fields of +selectedObj+ '+result);
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                    this.autoCompleteOptions = this.objectsListOfChild.filter(item => item.name !== this.optionToHideBill && item.reference.toLowerCase().includes(inputVal.toLowerCase()));
+
+                // makes visible the combobox, expanding it.
+                if (this.autoCompleteOptions.length && inputVal) {
+                    this.template.querySelector('.slds-combobox.slds-dropdown-trigger.slds-dropdown-trigger_click')?.classList.add('slds-is-open');
+                    this.template.querySelector('.slds-combobox.slds-dropdown-trigger.slds-dropdown-trigger_click')?.focus();
+                }
+
+            }else {
+                // filters in real time the list received from the wired Apex method
+                this.autoCompleteOptions = this.objectsList.filter(item => item.reference.toLowerCase().includes(inputVal.toLowerCase()));
+
+                // makes visible the combobox, expanding it.
+                if (this.autoCompleteOptions.length && inputVal) {
+                    this.template.querySelector('.slds-combobox.slds-dropdown-trigger.slds-dropdown-trigger_click')?.classList.add('slds-is-open');
+                    this.template.querySelector('.slds-combobox.slds-dropdown-trigger.slds-dropdown-trigger_click')?.focus();
+                }
             }
-
         } else {
-            // filters in real time the list received from the wired Apex method
-            this.autoCompleteOptions = this.objectsList.filter(item => item.reference.toLowerCase().includes(inputVal.toLowerCase()));
-    
-            // makes visible the combobox, expanding it.
-            if (this.autoCompleteOptions.length && inputVal) {
-                this.template.querySelector('.slds-combobox.slds-dropdown-trigger.slds-dropdown-trigger_click')?.classList.add('slds-is-open');
-                this.template.querySelector('.slds-combobox.slds-dropdown-trigger.slds-dropdown-trigger_click')?.focus();
-            }
-        }
-        }else{
             const selectedEvent = new CustomEvent('objclear', { detail: '' });
             this.dispatchEvent(selectedEvent);
         }
